@@ -1,0 +1,41 @@
+template(name='Agents')
+	h1 Агенты
+	each agents
+		.panel.agents
+			.panel-header
+				| #{name} #{_id}
+				a(href="/agents/#{_id}")
+					i.icon-pencil
+			.panel-content
+				each tickets
+					p 
+						a(href="/tickets/#{_id}") #{doc_id}
+						| от #{employee.name} #{description}
+		if active
+			| активен
+
+template(name='newAgent')
+	h1 Новый сотрудник
+	+agentForm
+
+template(name='editAgent')
+	h1 Изменить сотрудника
+	+agentForm
+
+template(name='agentForm')
+	form
+		.input-control
+			label
+				| ФИО
+				input(type='text' name='name' value=name)
+		.input-control
+			label
+				| стоимость часа
+				input(type='text', name='cost_per_hour' value=cost_per_hour)
+		.input-control.checkbox
+			label
+				input(type='checkbox' name='active' checked=active)
+				span.check
+				| активен
+		.input-control
+			input(type='submit', value='Сохранить')

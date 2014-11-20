@@ -1,0 +1,13 @@
+template(name='Problems')
+	h1 Это проблемы
+	each problems
+		div #{name}
+		a.remove(href='#') удалить
+
+	+newProblem
+	button Pushme
+
+template(name='newProblem')
+	form
+		input(type='text', name='description')
+		input(type='submit')

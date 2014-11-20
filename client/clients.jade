@@ -1,0 +1,58 @@
+template(name='clients')
+    .row
+        h1 Все клиенты
+        each clients
+            +client
+    .row
+        .selected 
+            h2 #{selected_client.name}
+
+template(name='client')
+    .tile.bg-blue.double
+        .tile-content.icon
+            i.icon-address-book
+            a(href="/clients/#{_id}/employees") employees
+        .tile-status
+            span.name #{name}
+         .brand
+             .badge 5
+
+template(name='newClient')
+    h1 Новый клиент
+    form
+        label Название клиента
+        .input-control
+            input(name='name', type='text')
+        .input-control
+            input(type='submit')
+
+template(name='clientEmployees')
+    h1 Сотрудники клиента #{name}
+    each employees
+        +employee
+    a.button(href='/clients/#{_id}/employees/new') Новый сотрудник
+
+template(name='employee')
+    .tile.double
+       span #{name}
+       span #{position}
+       span #{email}
+       span #{phone}
+
+template(name='newClientEmployee')
+    h1 Новый сотрудник в #{name}
+    form
+        label ФИО сотрудника
+        .input-control
+            input(name='name', type='text')
+        label Должность
+        .input-control
+            input(name='position', type='text')
+        label email
+        .input-control
+            input(name='email', type='email')
+        label телефон
+        .input-control
+            input(name='phone', type='phone')
+        .input-control
+            input(type='submit')

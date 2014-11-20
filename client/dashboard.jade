@@ -1,0 +1,56 @@
+template(name='Dashboard')
+	h1 Центр управления полетами
+	+unclassifiedTickets
+	+Incidents
+	+ServiceRequests
+	+Rfcs
+	+contentFor('navbar')
+		span.element
+			a(href='/tickets/new')
+				i.icon-file
+				| Создать
+
+template(name='unclassifiedTickets')
+	h2 Неклассифицированные тикеты
+	table.table
+		each tickets
+			tr
+				td #{employee.name} из #{employee.client.name}
+				td 
+					a(href="/tickets/#{_id}") #{description}
+				td
+					span(data-livestamp=createdAt)
+
+template(name='Incidents')
+	h2 Инциденты
+	table.table
+		each tickets
+			+ticketWithSla
+
+template(name='ServiceRequests')
+	if tickets
+		h2 Запросы на обслуживание
+		table.table
+			each tickets
+				+ticketWithSla
+
+template(name='Rfcs')
+	if tickets
+		h2 Запросы на изменение
+		table.table
+			each tickets
+				+ticketWithSla
+
+template(name='ticketWithSla')
+	tr
+		td 
+			i(class=ticket_icon)
+			| #{doc_id}
+			if reclassified
+				i.icon-cycle.fg-red(title='реклассифицирован')
+		td #{employee.name} из #{employee.client.name}
+		td 
+			a(href="/tickets/#{_id}") #{description}
+		td(class=status_class) #{status_locale}
+		td
+			span(data-livestamp=createdAt) #{createdAt}

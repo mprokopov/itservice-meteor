@@ -1,0 +1,171 @@
+template(name='tickets')
+    table.table
+        each tickets
+            tr
+                td #{employee.name}
+                td #{employee.client.name}
+                td
+                    +linkTo(route='ticket.show' data=getData)
+                        span #{description}
+                td(class=type) #{type_locale}
+                td #{status_locale}
+                td
+                    //span(livestamp(createdAt))
+                    span(data-livestamp=createdAt)
+
+    +contentFor('navbar')
+        span.element
+            a(href='/tickets/new')
+                i.icon-file
+                | Создать
+
+    +contentFor('breadcrumbs')
+        li
+            a(href='/tickets') Обращения
+
+template(name='newTicket')
+    .span6
+        form
+            label Сотрудник
+            .input-control
+                select(name='employee_id')
+                    each employees
+                        option(value=_id) #{name} #{position} из #{client.name}
+            label Описание
+            .input-control.textarea
+                textarea(name='description')
+            .input-control
+                input(type='submit', value='Сохранить обращение')
+    .span6
+        if employee
+            .panel
+                .panel-header
+                    | #{employee.name}
+                .panel-content
+                    span должность #{employee.position}
+                    address email #{employee.email}
+                    phone #{employee.phone}
+        each tickets
+            span #{description}
+            span #{createdAt}
+            hr
+    
+    +contentFor('breadcrumbs')
+        li
+            a(href='/tickets') Обращения
+        li
+            a(href='/tickets/new') Новое
+
+template(name='showTicket')
+    h1 Тикет #{doc_id} от #{employee.name}
+    .row
+        .span6
+            .panel
+                .panel-content
+                    p #{description}
+            unless type
+                +classifyTicket
+            if isClassified
+                +assignTicket
+            if isAssigned
+                +processTicket
+        .span6
+            .tab-control(data-role='tab-control')
+                ul.tabs
+                    li.active
+                        a(href='#page1') Инфо
+                    li
+                        a(href='#page2')
+                            i.icon-user
+                            | Инициатор
+                .frames
+                    .frame#page1.active
+                        h2 ID #{doc_id}
+                        if sla
+                            h2 #{sla.name} реакция: {{to_duration sla.response}} решение {{to_duration sla.resolve}}
+                        if response_percent
+                            | #{response_percent}
+                            .progress-bar.small(data-role="progress-bar" data-value=response_percent)
+                        if resolve_percent
+                            | #{resolve_percent}
+                            .progress-bar.small(data-role="progress-bar" data-value=resolve_percent)
+                        h4 
+                            | Создан
+                            span(data-livestamp=createdAt) #{createdAt}
+                        if classifiedAt
+                            h4
+                                | Классифицирован
+                                span(data-livestamp=classifiedAt)  #{classifiedAt}
+                        if assignedAt
+                            h4
+                                | Назначен 
+                                span(data-livestamp=assignedAt) #{assignedAt}
+                        
+                        h3 Тип тикета #{type_locale}
+                        
+                        h4(class=status_class) Статус #{status_locale}
+                        if assigned_to
+                            h3 Ответственный #{assigned_to.name}
+
+                    .frame#page2
+                        h3 Инициатор
+                        span #{employee.name} #{employee.position}
+    .row
+        a.remove.button.danger Удалить
+    
+    +contentFor('navbar')
+        span.element
+            a(href='/tickets/new')
+                i.icon-file
+                | Создать
+                
+    +contentFor('breadcrumbs')
+        li
+            a(href='/tickets') Обращения
+        li
+            a(href="/tickets/#{_id}") Обращение #{doc_id}
+
+template(name='assignTicket')
+    form
+        .input-control.select
+            label Ответственный
+                select(name='agent_id')
+                    each agents
+                        option(value=_id) #{name}
+        .input-control
+            input.default(type='submit' value='Назначить')
+            button.reclassify Реклассифицировать
+
+template(name='processTicket')
+    button.default.process В работу
+
+template(name='classifyTicket')
+    form
+        .input-control.select
+            label
+                | SLA
+                select(name='sla_id')
+                    each slas
+                        option(value=_id) #{name}
+        .input-control.radio
+            label
+                input(type='radio', value='Incident', name='ticketType') 
+                span.check
+                | Инцидент
+        .input-control.radio
+            label
+                input(type='radio', value='ServiceRequest', name='ticketType') 
+                span.check
+                | Запрос на обслуживание
+        .input-control.radio                
+            label
+                input(type='radio', value='Rfc', name='ticketType') 
+                span.check
+                | Rfc
+        .input-control.radio                
+            label
+                input(type='radio', value='Feedback', name='ticketType') 
+                span.check
+                | Feedback
+        .input-control
+            input(type='submit', value='Классифицировать')

@@ -1,0 +1,60 @@
+template(name='ApplicationLayout')
+	head
+		title 'IT-Service'
+	body.metro
+		.container
+			+navbar
+			+breadcrumbs
+			.grid.fluid
+				.row
+					.span3
+						+sidebar
+					.span9
+						+yield
+
+template(name='breadcrumbs')
+	nav.breadcrumbs.small
+		ul
+			li
+				a(href="/")
+					i.icon-home
+			+yield('breadcrumbs')
+
+
+template(name='navbar')
+	nav.navigation-bar.light
+		nav.navigation-bar-content
+			span.element
+				span.logo IT-Premium
+			span.element-divider
+			+yield('navbar')
+
+template(name='sidebar')
+	nav.sidebar.light
+		ul
+			li.stick.bg-blue
+				a(href='/') Центр управления
+			li.stick.bg-orange
+				a(href='/tickets') Обращения
+			li
+				ul.sub-menu(style='display:block;')
+					li
+						a(href='/incidents')
+							i.icon-bug.on-left
+							| Инциденты
+					li
+						a(href='/requests')
+							i.icon-basket.on-left
+							| Запр на обсл
+					li
+						a(href='/rfcs')
+							i.icon-cog.on-left
+							| Запр на изм
+			li
+				a(href='/changes') Изменения
+			li.stick.bg-green
+				a(href='/problems') Проблемы
+			li
+				a(href='/clients') Клиенты
+			li.stick.bg-magenta
+				a(href='/agents') Агенты
