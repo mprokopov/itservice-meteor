@@ -3,15 +3,12 @@ template(name='Agents')
 	each agents
 		.panel.agents
 			.panel-header
-				| #{name} #{_id}
+				img(src=services.google.picture)
+				| #{profile.name} #{services.google.email} #{roles}
 				a(href="/agents/#{_id}")
 					i.icon-pencil
 			.panel-content
-				each tickets
-					p 
-						a(href="/tickets/#{_id}") #{doc_id}
-						| от #{employee.name} #{description}
-		if active
+		if profile.active
 			| активен
 
 template(name='newAgent')
@@ -27,14 +24,14 @@ template(name='agentForm')
 		.input-control
 			label
 				| ФИО
-				input(type='text' name='name' value=name)
+				input(type='text' name='name' value=profile.name)
 		.input-control
 			label
 				| стоимость часа
-				input(type='text', name='cost_per_hour' value=cost_per_hour)
+				input(type='text', name='cost_per_hour' value=profile.cost_per_hour)
 		.input-control.checkbox
 			label
-				input(type='checkbox' name='active' checked=active)
+				input(type='checkbox' name='active' checked=profile.active)
 				span.check
 				| активен
 		.input-control

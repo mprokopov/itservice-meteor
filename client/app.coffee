@@ -26,6 +26,11 @@ Router.route '/clients/new', ->
 Router.route '/clients', ->
   @render 'clients'
 
+Router.route '/clients/:_id', ->
+  @render 'editClient',
+    data: Clients.findOne
+      _id: @params._id
+
 Router.route '/clients/:_id/employees', ->
   @render 'clientEmployees',
     data: Clients.findOne
@@ -52,3 +57,9 @@ Router.route '/agents/:_id', ->
 
 Router.route '/incidents', ->
   @render 'incidents.index'
+
+Router.route '/slas', ->
+  @render 'slas'
+
+Router.route '/slas/new', ->
+  @render 'newSla'

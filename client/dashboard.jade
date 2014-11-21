@@ -51,6 +51,17 @@ template(name='ticketWithSla')
 		td #{employee.name} из #{employee.client.name}
 		td 
 			a(href="/tickets/#{_id}") #{description}
+		td 
+			if response_duration_left
+				| {{to_duration response_duration_left}}
+			if response_breached
+				i.icon-mobile.fg-red
+			else
+				i.icon-mobile
+			if resolve_duration_left
+				| {{to_duration resolve_duration_left}}
+			if resolve_breached
+				i.icon-shit.fg-red
 		td(class=status_class) #{status_locale}
 		td
 			span(data-livestamp=createdAt) #{createdAt}

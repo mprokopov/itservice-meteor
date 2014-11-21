@@ -5,12 +5,13 @@ template(name='ApplicationLayout')
 		.container
 			+navbar
 			+breadcrumbs
-			.grid.fluid
-				.row
-					.span3
-						+sidebar
-					.span9
-						+yield
+			if isInRole 'agent'
+				.grid.fluid
+					.row
+						.span3
+							+sidebar
+						.span9
+							+yield
 
 template(name='breadcrumbs')
 	nav.breadcrumbs.small
@@ -24,10 +25,12 @@ template(name='breadcrumbs')
 template(name='navbar')
 	nav.navigation-bar.light
 		nav.navigation-bar-content
-			span.element
-				span.logo IT-Premium
+			span.element.brand IT-Premium
 			span.element-divider
-			+yield('navbar')
+			ul.element-menu
+				+yield('navbar')
+			.element.place-right
+				+loginButtons
 
 template(name='sidebar')
 	nav.sidebar.light
@@ -54,7 +57,18 @@ template(name='sidebar')
 				a(href='/changes') Изменения
 			li.stick.bg-green
 				a(href='/problems') Проблемы
-			li
+			li.stick.bg-darkPink
+				a(href='/knowledges') Знания
+			li.stick.darkBlue
 				a(href='/clients') Клиенты
 			li.stick.bg-magenta
 				a(href='/agents') Агенты
+			li.stick.bg-red
+				a.dropdown-toggle Настройки SLA
+				ul.sub-menu(data-role='dropdown')
+					li
+						a(href='/slas') Сервисы
+					li
+						a Категории
+					li
+						a Уровни

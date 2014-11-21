@@ -28,23 +28,19 @@ Template.tickets.helpers
 					createdAt: -1
 			}
 
-UI.registerHelper 'ticket_icon', ->
-	switch @type
-		when 'Incident' then  'icon-bug'
-		when 'ServiceRequest' then 'icon-basket'
-		when 'Rfc' then 'icon-cog'
-		when 'Feedback' then 'icon-comments'
 
 UI.registerHelper 'status_class', ->
 	switch @status
 		when 'open'
-			'bg-blue'
+			'bg-pink'
 		when 'classified'
-			'bg-green'
+			'bg-teal'
 		when 'assigned'
-			'bg-red'
+			'bg-cyan'
 		when 'in_progress'
-			'bg-yellow'
+			'bg-green'
+		when 'finished'
+			'bg-indigo'
 
 UI.registerHelper 'type_locale', ->
 	switch @type
@@ -64,16 +60,16 @@ UI.registerHelper 'status_locale', ->
 			'назначен'
 		when 'in_progress'
 			'в работе'
+		when 'finished'
+			'завершен'
+		when 'closed'
+			'закрыт'
 
 @pad = (num) ->
 	if num < 10
 		"0" + num
 	else
 		num
-UI.registerHelper 'to_duration', (duration) ->
-	hours = parseInt(duration / 3600)
-	mins = parseInt (duration - hours * 3600)/60
-	"#{pad hours}:#{pad mins}"
 
 
 Template.newTicket.helpers
@@ -98,6 +94,27 @@ Template.showTicket.helpers
 		@status is 'assigned'
 	'isInProgress': ->
 		@status is 'in_progress'
+	'response_class': ->
+		switch 
+			when 75 < @response_percent
+				'bg-green'
+			when 25 < @response_percent < 75
+				'bg-yellow'
+			when 0 < @response_percent < 25
+				'bg-red'
+			else
+				'bg-crimson'
+	'resolve_class': ->
+		switch 
+			when 75 < @resolve_percent
+				'bg-green'
+			when 25 < @resolve_percent < 75
+				'bg-yellow'
+			when 0 < @resolve_percent < 25
+				'bg-red'
+			else
+				'bg-crimson'
+
 	
 	# 'response_percent': ->
 	# 	minutes_left = (@responseAt - new Date()) / 1000
@@ -133,11 +150,11 @@ Template.assignTicket.events
 				status: 'assigned'
 				assigned_to: Agents.findOne(_id: event.target.agent_id.value)
 				assignedAt: new Date()
-		Agents.update _id: event.target.agent_id.value,
-			$inc:
-				tickets_count: 1
-			$push:
-				tickets: Tickets.findOne(_id: @_id)
+		# Agents.update _id: event.target.agent_id.value,
+		# 	$inc:
+		# 		tickets_count: 1
+		# 	$push:
+		# 		tickets: Tickets.findOne(_id: @_id)
 
 Template.showTicket.rendered = ->
 	$.Metro.initAll()
@@ -145,12 +162,16 @@ Template.showTicket.rendered = ->
 Template.unclassifiedTickets.helpers
 	'tickets': ->
 		Tickets.find
-			type: undefined
+			status: 'open'
+			# type: undefined
+
 
 Template.Incidents.helpers
 	'tickets': ->
 		Tickets.find 
 			type: 'Incident'
+			status: 
+				$in: ['classified', 'assigned', 'in_progress']
 			{
 				sort:
 					createdAt: -1
@@ -159,6 +180,8 @@ Template.ServiceRequests.helpers
 	'tickets': ->
 		Tickets.find
 			type: 'ServiceRequest'
+			status: 
+				$in: ['classified', 'assigned', 'in_progress']
 			{
 				sort:
 					createdAt: -1
@@ -168,6 +191,8 @@ Template.Rfcs.helpers
 	'tickets': ->
 		Tickets.find
 			type: 'Rfc'
+			status: 
+				$in: ['classified', 'assigned', 'in_progress']
 			{
 				sort:
 					createdAt: -1
@@ -175,10 +200,11 @@ Template.Rfcs.helpers
 
 Template.classifyTicket.helpers
 	'slas': ->
-		console.log Tickets.findOne(_id: @_id)
-		Clients.findOne
-			'employees.name': Tickets.findOne(_id: @_id).employee.name
-		.slas
+		
+		client = Clients.findOne
+			'employees._id': Tickets.findOne(_id: @_id).employee._id
+		
+		client.slas
 
 Template.classifyTicket.events
 	'submit': (event) ->
@@ -197,9 +223,16 @@ Template.classifyTicket.events
 				responseAt:  responseAt
 				resolveAt: resolveAt
 
-		console.log "Ticket id #{@_id}, type: #{$('input[name=ticketType]:checked').val()}"
-
 Template.assignTicket.helpers
 	'agents': ->
 		Agents.find
 			active: true
+
+Template.finishTicket.events
+	'click .finish': (event) ->
+		event.preventDefault()
+		Tickets.update _id: @_id,
+			$set:
+				status: 'finished'
+				resolvedAt: new Date()
+		Router.go '/'

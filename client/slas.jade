@@ -1,0 +1,40 @@
+template(name='slas')
+	h1 SLAs
+	table.table
+		each slas
+			tr
+				td #{name}
+				td {{to_duration response}}
+				td {{to_duration resolve}}
+				td
+					a.remove
+						i.icon-trash
+						| удалить
+
+	+contentFor('navbar')
+		li
+			a(href='/slas/new') 
+				i.icon-file
+				| Добавить
+
+template(name='newSla')
+	form
+		.input-control.text.span4
+			label
+				| Сервис
+				input(type='text' name='name' value=name)
+		.input-control.text.span2
+			label
+				| Время реакции
+				input(type='text' name='response' value=response)
+		.input-control.text.span2
+			label
+				| Время решения
+				input(type='text' name='resolve' value=resolve)
+		.input-control
+			input(type='submit', value='Сохранить SLA')
+	+contentFor('breadcrumbs')
+		li
+			a(href='/slas') SLA
+		li
+			a(href='/slas/new') Новый SLA

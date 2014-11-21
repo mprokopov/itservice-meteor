@@ -8,13 +8,13 @@ template(name='tickets')
                     +linkTo(route='ticket.show' data=getData)
                         span #{description}
                 td(class=type) #{type_locale}
-                td #{status_locale}
+                td(class=status_class) #{status_locale}
                 td
                     //span(livestamp(createdAt))
                     span(data-livestamp=createdAt)
 
     +contentFor('navbar')
-        span.element
+        li
             a(href='/tickets/new')
                 i.icon-file
                 | Создать
@@ -69,6 +69,8 @@ template(name='showTicket')
                 +assignTicket
             if isAssigned
                 +processTicket
+            if isInProgress
+                +finishTicket
         .span6
             .tab-control(data-role='tab-control')
                 ul.tabs
@@ -78,17 +80,23 @@ template(name='showTicket')
                         a(href='#page2')
                             i.icon-user
                             | Инициатор
+                    li
+                        a(href='#page3')
+                            | Знания
+                    li
+                        a(href='#page4')
+                            | Проблемы
                 .frames
                     .frame#page1.active
                         h2 ID #{doc_id}
                         if sla
-                            h2 #{sla.name} реакция: {{to_duration sla.response}} решение {{to_duration sla.resolve}}
+                            h2 #{sla.name} реакция: {{to_duration response_duration_left}} из {{to_duration sla.response}} решение {{to_duration resolve_duration_left}} из {{to_duration sla.resolve}}
                         if response_percent
-                            | #{response_percent}
-                            .progress-bar.small(data-role="progress-bar" data-value=response_percent)
+                            | осталось реакции #{response_percent}%
+                            .progress-bar.small(data-role="progress-bar" data-value=response_percent data-color=response_class)
                         if resolve_percent
-                            | #{resolve_percent}
-                            .progress-bar.small(data-role="progress-bar" data-value=resolve_percent)
+                            | осталось решения #{resolve_percent}%
+                            .progress-bar.small(data-role="progress-bar" data-value=resolve_percent data-color=resolve_class)
                         h4 
                             | Создан
                             span(data-livestamp=createdAt) #{createdAt}
@@ -100,16 +108,24 @@ template(name='showTicket')
                             h4
                                 | Назначен 
                                 span(data-livestamp=assignedAt) #{assignedAt}
+                        if respondedAt
+                            h4
+                                | В работе
+                                span(data-livestamp=assignedAt) #{respondedAt}
                         
                         h3 Тип тикета #{type_locale}
                         
-                        h4(class=status_class) Статус #{status_locale}
+                        h4 
+                            | Статус
+                            span(class=status_class) #{status_locale}
                         if assigned_to
                             h3 Ответственный #{assigned_to.name}
 
                     .frame#page2
                         h3 Инициатор
                         span #{employee.name} #{employee.position}
+                    .frame#page3
+                    .frame#page4
     .row
         a.remove.button.danger Удалить
     
@@ -135,6 +151,10 @@ template(name='assignTicket')
         .input-control
             input.default(type='submit' value='Назначить')
             button.reclassify Реклассифицировать
+template(name='finishTicket')
+    form
+        .input-control
+            button.finish Завершить работы
 
 template(name='processTicket')
     button.default.process В работу
