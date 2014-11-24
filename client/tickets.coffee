@@ -13,8 +13,9 @@ Template.newTicket.events
 				createdAt: new Date()
 				doc_id: result
 				status: 'open'
-
+			
 			Router.go("/tickets/#{@_id}")
+
 
 Template.newTicket.rendered = ->
 	$('textarea').autosize()
@@ -165,6 +166,13 @@ Template.unclassifiedTickets.helpers
 			status: 'open'
 			# type: undefined
 
+Template.myTickets.helpers
+	'tickets': ->
+		Tickets.find
+			status:
+				$in: ['assigned', 'in_progress']
+			'assigned_to._id': Meteor.user().profile.agent._id
+
 
 Template.Incidents.helpers
 	'tickets': ->
@@ -222,6 +230,8 @@ Template.classifyTicket.events
 				classifiedAt: new Date()
 				responseAt:  responseAt
 				resolveAt: resolveAt
+
+		Meteor.call('processTickets')
 
 Template.assignTicket.helpers
 	'agents': ->

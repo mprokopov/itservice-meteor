@@ -26,11 +26,6 @@ Router.route '/clients/new', ->
 Router.route '/clients', ->
   @render 'clients'
 
-Router.route '/clients/:_id', ->
-  @render 'editClient',
-    data: Clients.findOne
-      _id: @params._id
-
 Router.route '/clients/:_id/employees', ->
   @render 'clientEmployees',
     data: Clients.findOne
@@ -38,6 +33,22 @@ Router.route '/clients/:_id/employees', ->
 
 Router.route '/clients/:_id/employees/new', ->
   @render 'newClientEmployee',
+    data: Clients.findOne
+      _id: @params._id
+
+Router.route '/clients/:_id/employees/:employeeId/edit', ->
+  @render 'editClientEmployee',
+    data: Employees.findOne
+      _id: @params.employeeId
+
+Router.route '/clients/:_id/employees/:employeeId', ->
+  @render 'clientEmployee',
+    data: Employees.findOne
+      _id: @params.employeeId
+
+
+Router.route '/clients/:_id', ->
+  @render 'editClient',
     data: Clients.findOne
       _id: @params._id
 
@@ -57,6 +68,9 @@ Router.route '/agents/:_id', ->
 
 Router.route '/incidents', ->
   @render 'incidents.index'
+
+Router.route '/service_requests', ->
+  @render 'serviceRequestsIndex'
 
 Router.route '/slas', ->
   @render 'slas'

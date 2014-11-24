@@ -1,5 +1,6 @@
 template(name='Dashboard')
 	h1 Центр управления полетами
+	+myTickets
 	+unclassifiedTickets
 	+Incidents
 	+ServiceRequests
@@ -9,7 +10,11 @@ template(name='Dashboard')
 			a(href='/tickets/new')
 				i.icon-file
 				| Создать
-
+template(name='myTickets')
+	h2 Мои тикеты
+	table.table
+		each tickets
+			+ticketWithSla
 template(name='unclassifiedTickets')
 	h2 Неклассифицированные тикеты
 	table.table
@@ -52,16 +57,20 @@ template(name='ticketWithSla')
 		td 
 			a(href="/tickets/#{_id}") #{description}
 		td 
-			if response_duration_left
-				| {{to_duration response_duration_left}}
-			if response_breached
-				i.icon-mobile.fg-red
+			if respondedAt
+				if response_breached
+					i.icon-mobile.fg-red
 			else
-				i.icon-mobile
-			if resolve_duration_left
-				| {{to_duration resolve_duration_left}}
-			if resolve_breached
-				i.icon-shit.fg-red
+				| {{to_duration response_duration_left}}
+				if response_breached
+					i.icon-mobile.fg-red
+				else
+					i.icon-mobile
+				
+			unless resolvedAt
+				| {{to_duration resolve_duration_left}} ({{resolve_percent}}%)
+				if resolve_breached
+					i.icon-shit.fg-red
 		td(class=status_class) #{status_locale}
 		td
 			span(data-livestamp=createdAt) #{createdAt}

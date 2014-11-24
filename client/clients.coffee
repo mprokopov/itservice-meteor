@@ -18,6 +18,7 @@ Template.newClient.events
 
     Clients.insert
       name: event.target.name.value
+      email: event.target.email.value
       createdAt: new Date()
       employees: []
 
@@ -60,6 +61,39 @@ Template.editClient.helpers
     SLAs.find
       _id:
         $nin: clients_sla_ids
+
+Template.editClientEmployee.events
+  'submit': (event) ->
+    event.preventDefault()
+
+    Clients.update _id: event.target.client_id.value,
+      $pop:
+        employees:
+          _id: @_id
+    
+    Clients.update _id: event.target.client_id.value,
+      $push:
+        employees:
+          _id: @_id
+          name: event.target.name.value
+          position: event.target.position.value
+          email: event.target.email.value
+          phone: event.target.phone.value
+          updatedAt: new Date()
+    
+    Employees.update _id: @_id,
+      name: event.target.name.value
+      position: event.target.position.value
+      email: event.target.email.value
+      phone: event.target.phone.value
+      createdAt: new Date()
+      client:
+        _id: event.target.client_id.value
+        name: Clients.findOne(_id: event.target.client_id.value).name
+
+    Router.go "/clients/#{event.target.client_id.value}/employees"
+
+
 
 Template.editClient.events
   'click .removeSla': (event) ->

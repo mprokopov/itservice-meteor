@@ -4,13 +4,16 @@ template(name='Agents')
 		.panel.agents
 			.panel-header
 				img(src=services.google.picture)
-				| #{profile.name} #{services.google.email} #{roles}
+				i.icon-user
+				| #{name} #{roles}
 				a(href="/agents/#{_id}")
 					i.icon-pencil
 			.panel-content
-		if profile.active
+		if active
 			| активен
-
+	+contentFor 'navbar'
+		li
+			a(href='/agents/new') Добавить
 template(name='newAgent')
 	h1 Новый сотрудник
 	+agentForm
@@ -20,19 +23,39 @@ template(name='editAgent')
 	+agentForm
 
 template(name='agentForm')
-	form
-		.input-control
+	.span6
+		form
 			label
 				| ФИО
-				input(type='text' name='name' value=profile.name)
-		.input-control
+			.input-control.text
+				input(type='text' name='name' value=name)
+			label
+				| email
+			.input-control.email
+				input(type='email' name='email' value=email)
+			label
+				| phone
+			.input-control.tel
+				input(type='tel' name='phone' value=phone)
 			label
 				| стоимость часа
-				input(type='text', name='cost_per_hour' value=profile.cost_per_hour)
-		.input-control.checkbox
-			label
-				input(type='checkbox' name='active' checked=profile.active)
-				span.check
-				| активен
-		.input-control
-			input(type='submit', value='Сохранить')
+			.input-control.text.span2
+				input(type='text', name='cost_per_hour' value=cost_per_hour)
+			.input-control.checkbox
+				label
+					input(type='checkbox' name='active' checked=active)
+					span.check
+					| активен
+			h4 Роли
+			.input-control.checkbox
+				label
+					input(type='checkbox' name='roles' value='agent' checked=isAgent)
+					span.check
+					| агент
+			.input-control.checkbox
+				label
+					input(type='checkbox' name='roles' value='supervisor' checked=isSupervisor)
+					span.check
+					| супервизор
+			.input-control
+				input(type='submit', value='Сохранить')

@@ -71,6 +71,9 @@ template(name='newClient')
         label Название клиента
         .input-control
             input(name='name', type='text')
+        label email домен клиента (bch.com.ua)
+        .input-control
+            input(name='email', type='email')
         .input-control
             input(type='submit')
 
@@ -88,10 +91,19 @@ template(name='clientEmployees')
         +employee
     
             
-        
+template(name='clientEmployee')
+    h1 #{name}
+    span #{name}
+    span #{position}
+    span #{email}
+    span #{phone}
+    
+    a.button(href="/clients/{{client._id}}/employees/{{_id}}/edit") изменить
 
 template(name='employee')
     .tile.double
+        .tile-header
+            a(href="/clients/{{../_id}}/employees/{{_id}}") #{name}
         .tile-content
            span #{name}
            span #{position}
@@ -102,18 +114,27 @@ template(name='employee')
 
 template(name='newClientEmployee')
     h1 Новый сотрудник в #{name}
+    +employeeForm
+
+template(name='employeeForm')
     form
+        input(type='hidden' name='client_id' value=client._id)
         label ФИО сотрудника
         .input-control
-            input(name='name', type='text')
+            input(name='name', type='text' value=name)
         label Должность
         .input-control
-            input(name='position', type='text')
+            input(name='position', type='text' value=position)
         label email
         .input-control
-            input(name='email', type='email')
+            input(name='email', type='email' value=email)
         label телефон
         .input-control
-            input(name='phone', type='phone')
+            input(name='phone', type='phone' value=phone)
         .input-control
             input(type='submit')
+
+template(name='editClientEmployee')
+    h1 Изменить #{name} клиента #{client.name}
+    +employeeForm
+
