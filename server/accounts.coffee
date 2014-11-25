@@ -10,8 +10,7 @@ Accounts.onLogin (options) ->
 			Roles.setUserRoles(currentUser, agent.roles)
 			Meteor.users.update _id: currentUser._id,
 				$set:
-					profile:
-						agent:
+					'profile.agent':
 							_id: agent._id
 							name: agent.name
 	
@@ -22,8 +21,7 @@ Accounts.onLogin (options) ->
 			Roles.setUserRoles(currentUser, 'employee')
 			Meteor.users.update _id: currentUser._id,
 				$set:
-					profile:
-						employee:
+					'profile.employee':
 							_id: employee._id
 							name: employee.name
 							client: employee.client
