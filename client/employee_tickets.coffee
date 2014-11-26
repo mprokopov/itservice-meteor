@@ -1,3 +1,8 @@
+# Template.employeeSidebar.helpers
+# 	activeIfTemplateIs: (url) ->
+# 		'active' if Router.current().url is url
+UI.registerHelper 'activeIfUrlIs', (url) ->
+	'active' if Router.current().url is url
 Template.indexEmployeeTickets.helpers
 	'tickets': ->
 		Tickets.find

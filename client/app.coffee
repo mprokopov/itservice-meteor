@@ -3,7 +3,7 @@ Router.configure
 
 Router.route '/', ->
   if Meteor.user().profile.employee?
-    Router.go '/mytickets'
+    Router.redirect '/mytickets'
   @render 'Dashboard'
 
 Router.route '/mytickets', ->
@@ -11,7 +11,7 @@ Router.route '/mytickets', ->
 
 Router.route '/mytickets/new', ->
   @render 'newEmployeeTicket'
-  
+
 Router.route '/mytickets/:_id', ->
   @render 'showEmployeeTicket',
     data: Tickets.findOne

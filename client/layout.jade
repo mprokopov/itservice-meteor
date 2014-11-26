@@ -41,13 +41,13 @@ template(name='navbar')
 template(name='sidebar')
 	nav.sidebar.light
 		ul
-			li.stick.bg-blue
+			li.stick.bg-blue(class="{{isActiveRoute regex='Dashboard'}}")
 				a(href='/') Центр управления
-			li.stick.bg-orange
+			li.stick.bg-orange(class="{{isActivePath regex='/tickets'}}")
 				a(href='/tickets') Обращения
 			li
 				ul.sub-menu(style='display:block;')
-					li
+					li(class="{{isActivePath regex='/incidents'}}")
 						a(href='/incidents')
 							i.icon-bug.on-left
 							| Инциденты
@@ -65,9 +65,9 @@ template(name='sidebar')
 				a(href='/problems') Проблемы
 			li.stick.bg-darkPink
 				a(href='/knowledges') Знания
-			li.stick.darkBlue
+			li.stick.darkBlue(class="{{isActivePath regex='/clients'}}")
 				a(href='/clients') Клиенты
-			li.stick.bg-magenta
+			li.stick.bg-magenta(class="{{isActivePath regex='/agents'}}")
 				a(href='/agents') Агенты
 			li.stick.bg-red
 				a.dropdown-toggle Настройки SLA

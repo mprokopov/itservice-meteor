@@ -20,4 +20,5 @@ accounts-google
 accounts-ui
 stylus
 mrt:googlemaps
+zimme:iron-router-active
 

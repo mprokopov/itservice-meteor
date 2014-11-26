@@ -1,9 +1,9 @@
 template(name='employeeSidebar')
 	nav.sidebar.light
 		ul
-			li
+			li(class="{{activeIfUrlIs '/mytickets'}}")
 				a(href='/mytickets') Мои обращения
-			li
+			li(class="{{activeIfUrlIs '/mytickets/new'}}")
 				a(href='/mytickets/new') Новое обращение
 
 template(name='indexEmployeeTickets')
@@ -44,7 +44,11 @@ template(name='formNewEmployeeActivity')
 template(name='employeeTicket')
 	tr
 		td
-			a(href="/mytickets/{{_id}}") #{doc_id}
+			a(href="/mytickets/{{_id}}") #{doc_id} #{type_locale}
+			
+		td 
+			if classifiedAt 
+				| #{sla.name}
 		td #{description}
 		td 
 			if assigned_to
