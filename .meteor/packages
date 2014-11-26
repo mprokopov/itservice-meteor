@@ -19,4 +19,5 @@ mrt:cron-tick
 accounts-google
 accounts-ui
 stylus
+mrt:googlemaps
 

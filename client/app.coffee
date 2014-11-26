@@ -47,7 +47,12 @@ Router.route '/clients/:_id/employees/:employeeId', ->
       _id: @params.employeeId
 
 
-Router.route '/clients/:_id', ->
+Router.route '/clients/:_id/slas', ->
+  @render 'editClientSLAs',
+    data: Clients.findOne
+      _id: @params._id
+
+Router.route '/clients/:_id/edit', ->
   @render 'editClient',
     data: Clients.findOne
       _id: @params._id

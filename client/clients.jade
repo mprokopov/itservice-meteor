@@ -6,6 +6,8 @@ template(name='clients')
     .row
         .selected 
             h2 #{selected_client.name}
+        #maps(style="width:900px; height:420px;")
+            | карты
     
     +contentFor('navbar')
         li
@@ -20,6 +22,10 @@ template(name='clients')
         +contentFor('navbar')
             li
                 a(href='/clients/new') Новый клиент
+            li
+                a(href="/clients/#{selected_client._id}/edit") 
+                    i.icon-pencil
+                    | изменить #{selected_client.name}
             li.element-divider
             li
                 a(href="/clients/#{selected_client._id}/employees") Сотрудники
@@ -37,8 +43,11 @@ template(name='client')
          .brand
              .badge 5
     
-
 template(name='editClient')
+    h1 Изменить #{name}
+    +clientForm
+
+template(name='editClientSLAs')
     h1 Клиент #{name}
     
     table.table.slas
@@ -65,17 +74,24 @@ template(name='selectSLA')
         each slas
             option(value=_id) #{name}
 
-template(name='newClient')
-    h1 Новый клиент
+template(name='clientForm')
     form
         label Название клиента
         .input-control
-            input(name='name', type='text')
+            input(name='name' type='text' value=name)
         label email домен клиента (bch.com.ua)
-        .input-control
-            input(name='email', type='email')
+        .input-control.email.text
+            input(name='email' type='email' value=email)
+        label адрес
+        .input-control.text
+            input(name='address', type='text' value=address)
         .input-control
             input(type='submit')
+
+template(name='newClient')
+    h1 Новый клиент
+    +clientForm
+    
 
 template(name='clientEmployees')
     +contentFor('navbar')
