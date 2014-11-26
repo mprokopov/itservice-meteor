@@ -1,3 +1,7 @@
+@fromDuration = (str) ->
+	[hours, minutes] = str.split(":")
+	parseInt(hours) * 3600 + parseInt(minutes) * 60
+
 UI.registerHelper 'to_duration', (duration) ->
 	
 	if duration < 0 

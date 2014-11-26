@@ -2,7 +2,20 @@ Router.configure
   layoutTemplate: 'ApplicationLayout'
 
 Router.route '/', ->
+  if Meteor.user().profile.employee?
+    Router.go '/mytickets'
   @render 'Dashboard'
+
+Router.route '/mytickets', ->
+  @render 'indexEmployeeTickets'
+
+Router.route '/mytickets/new', ->
+  @render 'newEmployeeTicket'
+  
+Router.route '/mytickets/:_id', ->
+  @render 'showEmployeeTicket',
+    data: Tickets.findOne
+      _id: @params._id
 
 Router.route '/tickets', ->
   @render 'tickets'

@@ -1,0 +1,54 @@
+template(name='employeeSidebar')
+	nav.sidebar.light
+		ul
+			li
+				a(href='/mytickets') Мои обращения
+			li
+				a(href='/mytickets/new') Новое обращение
+
+template(name='indexEmployeeTickets')
+	table.table
+		each tickets
+			+employeeTicket
+
+template(name='newEmployeeTicket')
+	form
+		.input-control.textarea
+			textarea(name='description')
+		.input-control
+			input(type='submit')
+
+template(name='showEmployeeTicket')
+	.panel
+		.panel-header
+			h2 
+				| #{doc_id} #{type_locale}
+				span(class=status_class) #{status_locale}
+			if assigned_to
+				h3 Ответственный #{assigned_to.name}
+		.panel-content 
+			h3 Описание
+			p #{description}
+	+activities
+	+formNewEmployeeActivity
+
+template(name='formNewEmployeeActivity')
+	h2 Откомментировать
+	form
+		.input-control.textarea
+			textarea(name='description')
+		.input-control
+			input(type='submit')
+
+
+template(name='employeeTicket')
+	tr
+		td
+			a(href="/mytickets/{{_id}}") #{doc_id}
+		td #{description}
+		td 
+			if assigned_to
+				|ответственный #{assigned_to.name}
+		td(class=status_class) #{status_locale}
+		td 
+			span(data-livestamp=createdAt)

@@ -12,7 +12,13 @@ template(name='ApplicationLayout')
 							+sidebar
 						.span9
 							+yield
-
+			if isInRole 'employee'
+				.grid.fluid
+					.row
+						.span3
+							+employeeSidebar
+						.span9
+							+yield
 template(name='breadcrumbs')
 	nav.breadcrumbs.small
 		ul

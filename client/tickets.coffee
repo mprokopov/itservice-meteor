@@ -11,6 +11,7 @@ Template.newTicket.events
 				employee: Employees.findOne({_id: event.target.employee_id.value})
 				description: event.target.description.value
 				createdAt: new Date()
+				duration: 0
 				doc_id: result
 				status: 'open'
 			
@@ -221,6 +222,30 @@ Template.classifyTicket.events
 
 		responseAt = new Date(@createdAt.getTime() + sla.response * 1000)
 		resolveAt = new Date(@createdAt.getTime() + sla.resolve * 1000)
+		
+		# activity=
+		# 	description: "Классифицировал как #{$('input[name=ticketType]:checked').val()}"
+		# 	is_automated: true
+		# 	duration: 2*60 # две минуты
+		# 	agent: Meteor.user().profile.agent
+		# 	createdAt: new Date()
+		# ticket=
+		# 	type: $('input[name=ticketType]:checked').val()
+		# 	sla: sla
+		# 	status: 'classified'
+		# 	classifiedAt: new Date()
+		# 	responseAt:  responseAt
+		# 	resolveAt: resolveAt			
+
+		# Meteor.call 'addActivityToTicket', activity, ticket
+		description = "Классифицировал как #{$('input[name=ticketType]:checked').val()}"
+
+		activity_id = Activities.insert
+			description: description
+			is_automated: true
+			duration: 2*60 # две минуты
+			agent: Meteor.user().profile.agent
+			createdAt: new Date()
 
 		Tickets.update _id: @_id,
 			$set:
@@ -230,6 +255,15 @@ Template.classifyTicket.events
 				classifiedAt: new Date()
 				responseAt:  responseAt
 				resolveAt: resolveAt
+			$push:
+				activities:
+					_id: activity_id
+					description: description
+					is_automated: true
+					duration: 2*60 # две минуты
+					agent: Meteor.user().profile.agent
+					createdAt: new Date()
+
 
 		Meteor.call('processTickets')
 

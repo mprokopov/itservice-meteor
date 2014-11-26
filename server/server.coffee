@@ -14,6 +14,17 @@ Meteor.methods
 			$unset:
 				tickets: ''
 			multi: true
+	# 'addActivityToTicket': (activity, ticket) ->
+	# 	activity_id = Activities.insert activity
+	# 	activity._id = activity_id
+
+	# 	Tickets.update _id: @_id,
+	# 		$set:
+	# 			ticket
+	# 		$push:
+	# 			activities:
+	# 				activity
+
 	'processTickets': ->
 		tickets = Tickets.find({status:{$in: ['classified','assigned']}}).fetch()
 		

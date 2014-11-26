@@ -1,3 +1,8 @@
+template(name='employeeTickets')
+    table.table
+        each tickets
+            +ticketWithSla
+
 template(name='tickets')
     table.table
         each tickets
@@ -22,6 +27,33 @@ template(name='tickets')
     +contentFor('breadcrumbs')
         li
             a(href='/tickets') Обращения
+
+template(name='activities')
+    table.table
+        each activities
+            tr
+                if agent
+                    td #{agent.name}
+                if employee
+                    td #{employee.name}
+                td #{description}
+                td 
+                    span(data-livestamp=createdAt) #{createdAt}
+
+
+template(name='formActivity')
+    form
+        input(type='hidden' name='ticket_id' value=_id)
+        label
+            | Описание действий
+        .input-control.textarea
+            textarea(name='description')
+        label
+            | длительность
+        .input-control.text.size2
+            input(type='text' name='duration' value='00:05')
+        .input-control
+            input(type='submit')
 
 template(name='newTicket')
     .span6
@@ -71,6 +103,8 @@ template(name='showTicket')
                 +processTicket
             if isInProgress
                 +finishTicket
+            +formActivity
+            +activities
         .span6
             .tab-control(data-role='tab-control')
                 ul.tabs
@@ -120,6 +154,7 @@ template(name='showTicket')
                             span(class=status_class) #{status_locale}
                         if assigned_to
                             h3 Ответственный #{assigned_to.name}
+                        h5 Длительность {{to_duration duration}}
 
                     .frame#page2
                         h3 Инициатор
