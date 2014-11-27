@@ -88,8 +88,15 @@ Template.showTicket.events
 	'click a.remove': ->
 		Tickets.remove(@_id)
 		Router.go('/tickets')
+	'click #is_major': (event) ->
+		console.log event.currentTarget.checked
+		Tickets.update _id: @_id,
+			$set:
+				is_major: event.currentTarget.checked
 
 Template.showTicket.helpers
+	'isIncident': ->
+		@type is 'Incident'
 	'isClassified': ->
 		@status is 'classified'
 	'isAssigned': ->
@@ -166,6 +173,12 @@ Template.unclassifiedTickets.helpers
 		Tickets.find
 			status: 'open'
 			# type: undefined
+Template.majorTickets.helpers
+	tickets: ->
+		Tickets.find
+			is_major: true
+			status:
+				$in: ['classified', 'assigned', 'in_progress']
 
 Template.myTickets.helpers
 	'tickets': ->

@@ -3,8 +3,7 @@ template(name='Agents')
 	each agents
 		.panel.agents
 			.panel-header
-				img(src=services.google.picture)
-				i.icon-user
+				img(src=picture)
 				| #{name} #{roles}
 				a(href="/agents/#{_id}")
 					i.icon-pencil

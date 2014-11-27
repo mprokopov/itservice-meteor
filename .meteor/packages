@@ -21,4 +21,5 @@ accounts-ui
 stylus
 mrt:googlemaps
 zimme:iron-router-active
-
+accounts-facebook
+splendido:accounts-meld

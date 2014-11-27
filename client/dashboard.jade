@@ -1,7 +1,8 @@
 template(name='Dashboard')
 	h1 Центр управления полетами
-	+myTickets
 	+unclassifiedTickets
+	+majorTickets
+	+myTickets
 	+Incidents
 	+ServiceRequests
 	+Rfcs
@@ -32,6 +33,12 @@ template(name='Incidents')
 		each tickets
 			+ticketWithSla
 
+template(name='majorTickets')
+	h2 Массовые инциденты
+	table.table
+		each tickets
+			+ticketWithSla
+
 template(name='ServiceRequests')
 	if tickets
 		h2 Запросы на обслуживание
@@ -49,6 +56,8 @@ template(name='Rfcs')
 template(name='ticketWithSla')
 	tr
 		td 
+			if is_major
+				i.icon-fire.fg-red
 			i(class=ticket_icon)
 			| #{doc_id}
 			if reclassified

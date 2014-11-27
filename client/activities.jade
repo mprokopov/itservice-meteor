@@ -1,0 +1,33 @@
+template(name='activities')
+    each activities
+        .row
+            .span2
+                if agent
+                    //- #{agent.name}
+                    img(src=picture)
+                    small #{agent.name}
+                if employee
+                    img(src=picture)
+                    small #{employee.name}
+                //- +avatar(shape="circle")
+            .span10
+                .balloon.right
+                    .padding10
+                        p #{description}
+                        small
+                            span(data-livestamp=createdAt) #{createdAt}
+
+
+template(name='formActivity')
+    form
+        input(type='hidden' name='ticket_id' value=_id)
+        label
+            | Описание действий
+        .input-control.textarea
+            textarea(name='description')
+        label
+            | длительность
+        .input-control.text.size2
+            input(type='text' name='duration' value='00:05')
+        .input-control
+            input(type='submit')

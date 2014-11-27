@@ -28,32 +28,6 @@ template(name='tickets')
         li
             a(href='/tickets') Обращения
 
-template(name='activities')
-    table.table
-        each activities
-            tr
-                if agent
-                    td #{agent.name}
-                if employee
-                    td #{employee.name}
-                td #{description}
-                td 
-                    span(data-livestamp=createdAt) #{createdAt}
-
-
-template(name='formActivity')
-    form
-        input(type='hidden' name='ticket_id' value=_id)
-        label
-            | Описание действий
-        .input-control.textarea
-            textarea(name='description')
-        label
-            | длительность
-        .input-control.text.size2
-            input(type='text' name='duration' value='00:05')
-        .input-control
-            input(type='submit')
 
 template(name='newTicket')
     .span6
@@ -138,6 +112,13 @@ template(name='showTicket')
                             h4
                                 | Классифицирован
                                 span(data-livestamp=classifiedAt)  #{classifiedAt}
+                        if isIncident
+                            .input-control.checkbox
+                                label
+                                    input#is_major(type='checkbox' checked=is_major)
+                                    span.check
+                                    i.icon-fire.fg-red
+                                    | массовый инцидент
                         if assignedAt
                             h4
                                 | Назначен 

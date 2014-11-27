@@ -80,6 +80,7 @@ Template.newClientEmployee.events
       createdAt: new Date()
       email: event.target.email.value
       phone: event.target.phone.value
+      active: event.target.active.checked
       client:
         _id: @_id
         name: Clients.findOne({_id: @_id}).name
@@ -92,6 +93,7 @@ Template.newClientEmployee.events
           position: event.target.position.value
           email: event.target.email.value
           phone: event.target.phone.value
+          active: event.target.active.checked
           createdAt: new Date()
 
     Router.go "/clients/#{@_id}/employees"
@@ -121,6 +123,7 @@ Template.editClientEmployee.events
           position: event.target.position.value
           email: event.target.email.value
           phone: event.target.phone.value
+          active: event.target.active.checked
           updatedAt: new Date()
     
     Employees.update _id: @_id,
@@ -128,6 +131,7 @@ Template.editClientEmployee.events
       position: event.target.position.value
       email: event.target.email.value
       phone: event.target.phone.value
+      active: event.target.active.checked
       createdAt: new Date()
       client:
         _id: event.target.client_id.value

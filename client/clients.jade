@@ -1,156 +1,156 @@
 template(name='clients')
-    .row
-        h1 Все клиенты
-        each clients
-            +client
-    .row
-        .selected 
-            h2 #{selected_client.name}
-        #maps(style="width:900px; height:420px;")
-            | карты
-    
-    +contentFor('navbar')
-        li
-            a(href='/clients/new') 
-                i.icon-file
-                | Добавить
-    +contentFor('breadcrumbs')
-        li
-            a(href='/clients') Клиенты
-    
-    if selected_client
-        +contentFor('navbar')
-            li
-                a(href='/clients/new') Новый клиент
-            li
-                a(href="/clients/#{selected_client._id}/edit") 
-                    i.icon-pencil
-                    | изменить #{selected_client.name}
-            li.element-divider
-            li
-                a(href="/clients/#{selected_client._id}/employees") Сотрудники
-            li
-                a(href="/clients/#{selected_client._id}") SLA
-                
+	.row
+		h1 Все клиенты
+		each clients
+			+client
+	.row
+		.selected 
+			h2 #{selected_client.name}
+		#maps(style="width:900px; height:420px;")
 
+	+contentFor('navbar')
+		li
+			a(href='/clients/new') 
+				i.icon-file
+				| Добавить
+	+contentFor('breadcrumbs')
+		li
+			a(href='/clients') Клиенты
+	
+	if selected_client
+		+contentFor('navbar')
+			li
+				a(href='/clients/new') Новый клиент
+			li
+				a(href="/clients/#{selected_client._id}/edit") 
+					i.icon-pencil
+					| изменить #{selected_client.name}
+			li.element-divider
+			li
+				a(href="/clients/#{selected_client._id}/employees") Сотрудники
+			li
+				a(href="/clients/#{selected_client._id}") SLA
 
 template(name='client')
-    .tile.bg-blue.double
-        .tile-content.icon
-            i.icon-address-book
-        .tile-status
-            span.name #{name}
-         .brand
-             .badge 5
-    
+	.tile.bg-blue.double
+		.tile-content.icon
+			i.icon-address-book
+		.tile-status
+			span.name #{name}
+		.brand
+			.badge 5
+
 template(name='editClient')
-    h1 Изменить #{name}
-    +clientForm
+	h1 Изменить #{name}
+	+clientForm
 
 template(name='editClientSLAs')
-    h1 Клиент #{name}
-    
-    table.table.slas
-        each slas
-            tr
-                td #{name}
-                td {{to_duration response}}
-                td {{to_duration resolve}}
-                td
-                    a.removeSla(data-client-id="{{../_id}}")
-                        i.icon-remove
-    //- a.addSla Добавить SLA
-    h2 Доступные SLA
-    table.table
-        each available_slas
-            tr
-                td #{name}
-                td
-                    a.addThisSla(data-client-id="{{../_id}}")
-                        i.icon-upload-3
+	h1 Клиент #{name}
+	
+	table.table.slas
+		each slas
+			tr
+				td #{name}
+				td {{to_duration response}}
+				td {{to_duration resolve}}
+				td
+					a.removeSla(data-client-id="{{../_id}}")
+						i.icon-remove
+	h2 Доступные SLA
+	table.table
+		each available_slas
+			tr
+				td #{name}
+				td
+					a.addThisSla(data-client-id="{{../_id}}")
+						i.icon-upload-3
 
 template(name='selectSLA')
-    select(name='slas')
-        each slas
-            option(value=_id) #{name}
+	select(name='slas')
+		each slas
+			option(value=_id) #{name}
 
 template(name='clientForm')
-    form
-        label Название клиента
-        .input-control
-            input(name='name' type='text' value=name)
-        label email домен клиента (bch.com.ua)
-        .input-control.email.text
-            input(name='email' type='email' value=email)
-        label адрес
-        .input-control.text
-            input(name='address', type='text' value=address)
-        .input-control
-            input(type='submit')
+	form
+		label Название клиента
+		.input-control
+			input(name='name' type='text' value=name)
+		label email домен клиента (bch.com.ua)
+		.input-control.email.text
+			input(name='email' type='email' value=email)
+		label адрес
+		.input-control.text
+			input(name='address', type='text' value=address)
+		.input-control
+			input(type='submit')
 
 template(name='newClient')
-    h1 Новый клиент
-    +clientForm
-    
+	h1 Новый клиент
+	+clientForm
 
 template(name='clientEmployees')
-    +contentFor('navbar')
-        li
-            a(href="./employees/new") Новый сотрудник
-    +contentFor('breadcrumbs')
-        li
-            a(href='/clients') Клиенты
-        li
-            a(href="/clients/#{_id}") #{name} #{_id}
-    h1 Сотрудники клиента #{name}
-    each employees
-        +employee
-    
-            
+	+contentFor('navbar')
+		li
+			a(href="./employees/new") Новый сотрудник
+	+contentFor('breadcrumbs')
+		li
+			a(href='/clients') Клиенты
+		li
+			a(href="/clients/#{_id}") #{name} #{_id}
+	h1 Сотрудники клиента #{name}
+	each employees
+		+employee
+
 template(name='clientEmployee')
-    h1 #{name}
-    span #{name}
-    span #{position}
-    span #{email}
-    span #{phone}
-    
-    a.button(href="/clients/{{client._id}}/employees/{{_id}}/edit") изменить
+	h1 #{name}
+	span #{name}
+	span #{position}
+	span #{email}
+	span #{phone}
+	
+	a.button(href="/clients/{{client._id}}/employees/{{_id}}/edit") изменить
 
 template(name='employee')
-    .tile.double
-        .tile-header
-            a(href="/clients/{{../_id}}/employees/{{_id}}") #{name}
-        .tile-content
-           span #{name}
-           span #{position}
-           span #{email}
-           span #{phone}
-        .tile-status
-            span #{active}
+	.tile.double
+		.tile-header
+			a(href="/clients/{{../_id}}/employees/{{_id}}") #{name}
+		//- .tile-content
+		//- 	span #{name}
+		//- 	span #{position}
+		//- 	span #{email}
+		//- 	span #{phone}
+		.tile-content.image
+			img(src=picture)
+		.tile-status
+			span.label.fg-blue #{name}
 
 template(name='newClientEmployee')
-    h1 Новый сотрудник в #{name}
-    +employeeForm
+	h1 Новый сотрудник в #{name}
+	+employeeForm
 
 template(name='employeeForm')
-    form
-        input(type='hidden' name='client_id' value=client._id)
-        label ФИО сотрудника
-        .input-control
-            input(name='name', type='text' value=name)
-        label Должность
-        .input-control
-            input(name='position', type='text' value=position)
-        label email
-        .input-control
-            input(name='email', type='email' value=email)
-        label телефон
-        .input-control
-            input(name='phone', type='phone' value=phone)
-        .input-control
-            input(type='submit')
+	form
+		input(type='hidden' name='client_id' value=client._id)
+		label ФИО сотрудника
+		.input-control
+			input(name='name', type='text' value=name)
+		label Должность
+		.input-control
+			input(name='position', type='text' value=position)
+		label email
+		.input-control
+			input(name='email', type='email' value=email)
+		label телефон
+		.input-control
+			input(name='phone', type='phone' value=phone)
+		.input-control.checkbox
+			label
+				input(name='active', type='checkbox' checked=active)
+				span.check
+				| активен
+		.input-control
+			input(type='submit')
 
 template(name='editClientEmployee')
-    h1 Изменить #{name} клиента #{client.name}
-    +employeeForm
-
+	h1 Изменить #{name} клиента #{client.name}
+	+employeeForm
