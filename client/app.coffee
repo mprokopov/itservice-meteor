@@ -1,13 +1,29 @@
 Router.configure
   layoutTemplate: 'ApplicationLayout'
 
+Router.map ->
+  @route 'mytickets',
+    path: '/mytickets'
+    template: 'indexEmployeeTickets'
+
+  @route 'availableEmployeeSLAs',
+    path: '/mytickets/slas'
+    template: 'availableEmployeeSLAs'
+
+  @route 'show.problem',
+    path: '/problems/:_id'
+    template: 'showProblem'
+    data: ->
+      Problems.findOne
+        _id: @params._id
+
 Router.route '/', ->
   if Meteor.user().profile.employee?
     Router.redirect '/mytickets'
   @render 'Dashboard'
 
-Router.route '/mytickets', ->
-  @render 'indexEmployeeTickets'
+# Router.route '/mytickets', ->
+#   @render 'indexEmployeeTickets'
 
 Router.route '/mytickets/new', ->
   @render 'newEmployeeTicket'

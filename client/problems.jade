@@ -1,13 +1,54 @@
 template(name='Problems')
 	h1 Это проблемы
-	each problems
-		div #{name}
-		a.remove(href='#') удалить
+	table.table
+		each problems
+			tr
+				td #{description}
+				td #{client.name}
+				td #{sla.name}
+				td 
+					a(href="/problems/#{_id}") #{status_locale}
+				td 
+					span(data-livestamp=createdAt)
+				td
+					a.remove(href='#') удалить
+template(name='problemIncident')
+	h3 
+		a(href="/tickets/#{_id}") Инцидент #{doc_id}
+	
+	p #{description}
+	span(data-livestamp=createdAt)
 
-	+newProblem
-	button Pushme
-
-template(name='newProblem')
+template(name='showProblem')
 	form
-		input(type='text', name='description')
-		input(type='submit')
+		h2 Связанные инциденты
+		each tickets
+			+problemIncident
+
+		label Описание проблемы
+		.input-control.textarea
+			textarea(name='description')
+				|#{description}
+		label Обходное решение
+		.input-control.textarea
+			textarea(name='workaround')
+		label Решение проблемы
+		.input-control.textarea
+			textarea(name='solution')
+		.input-control.radio
+			label
+				input(type='radio' name='status' value='open' checked=isOpen)
+				span.check
+				|решение не найдено
+		.input-control.radio
+			label
+				input(type='radio' name='status' value='workaround' checked=isWorkaround)
+				span.check
+				|найдено обходное решение
+		.input-control.radio
+			label
+				input(type='radio' name='status' value='solved' checked=isSolved)
+				span.check
+				|найдено решение
+		.input-control
+			input(type='submit')

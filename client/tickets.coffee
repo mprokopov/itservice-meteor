@@ -83,11 +83,36 @@ Template.newTicket.helpers
 	'tickets': ->
 		Tickets.find
 			'employee._id': Session.get('employee_id')
+			'createdAt': 
+			 	$gt: new Date(ISODate().getTime() - 1000 * 3600 * 48) # предыдущие 48 часов
 
 Template.showTicket.events
+	'click a.new-problem': (event) ->
+		event.preventDefault()
+		Problems.insert
+			tickets: [ this ]
+			sla: @sla
+			client: @employee.client
+			description: $('#problem-description').val()
+			author: Meteor.user().profile.agent
+			status: 'open'
+			createdAt: new Date()
+		$('#problem-description').val('')
+
 	'click a.remove': ->
 		Tickets.remove(@_id)
 		Router.go('/tickets')
+	'mouseenter .panel.problem': (event) ->
+		$(event.currentTarget).find('a.add-incident').toggleClass('hide')
+	'mouseleave .panel.problem': (event) ->
+		$(event.currentTarget).find('a.add-incident').toggleClass('hide')
+	'click a.add-incident': (event) ->
+		event.preventDefault()
+		Problems.update _id: @_id,
+			$push:
+				tickets:
+					Tickets.findOne _id: $(event.currentTarget).data('ticket-id')
+
 	'click #is_major': (event) ->
 		console.log event.currentTarget.checked
 		Tickets.update _id: @_id,
@@ -95,6 +120,17 @@ Template.showTicket.events
 				is_major: event.currentTarget.checked
 
 Template.showTicket.helpers
+	'problems': ->
+		if @sla
+			Problems.find
+				'sla._id': @sla._id
+				'client._id': @employee.client._id
+	'problems_count': ->
+		if @sla
+			Problems.find
+				'sla._id': @sla._id
+				'client._id': @employee.client._id
+			.count()
 	'isIncident': ->
 		@type is 'Incident'
 	'isClassified': ->
@@ -222,16 +258,16 @@ Template.Rfcs.helpers
 
 Template.classifyTicket.helpers
 	'slas': ->
-		
 		client = Clients.findOne
 			'employees._id': Tickets.findOne(_id: @_id).employee._id
-		
-		client.slas
+		if client.slas
+			client.slas
 
 Template.classifyTicket.events
 	'submit': (event) ->
 		event.preventDefault()
 		sla = SLAs.findOne(_id: event.target.sla_id.value)
+		# sla = Clients.findOne('slas._id': event.target.sla_id.value)
 
 		responseAt = new Date(@createdAt.getTime() + sla.response * 1000)
 		resolveAt = new Date(@createdAt.getTime() + sla.resolve * 1000)

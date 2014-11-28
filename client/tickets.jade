@@ -85,15 +85,16 @@ template(name='showTicket')
                     li.active
                         a(href='#page1') Инфо
                     li
-                        a(href='#page2')
+                        a(href='#user-info')
                             i.icon-user
                             | Инициатор
-                    li
-                        a(href='#page3')
-                            | Знания
-                    li
-                        a(href='#page4')
-                            | Проблемы
+                    if classifiedAt
+                        li
+                            a(href='#knowledges')
+                                | Знания
+                        li
+                            a(href='#problems')
+                                | Проблемы #{problems_count}
                 .frames
                     .frame#page1.active
                         h2 ID #{doc_id}
@@ -137,11 +138,29 @@ template(name='showTicket')
                             h3 Ответственный #{assigned_to.name}
                         h5 Длительность {{to_duration duration}}
 
-                    .frame#page2
-                        h3 Инициатор
-                        span #{employee.name} #{employee.position}
-                    .frame#page3
-                    .frame#page4
+                    .frame#user-info
+                        with employee
+                            +employeeDetails
+                    if classifiedAt
+                        .frame#knowledges
+                        .frame#problems
+                            h2 Связанные проблемы
+                            label Описание проблемы
+                            .input-control.textarea
+                                textarea#problem-description(name='problem')
+                            a.new-problem.button Создать проблему
+                            each problems
+                                .panel.problem
+                                    .panel-header
+                                        span(data-livestamp=createdAt)
+                                        span #{status_locale}
+                                    .panel-content
+                                        | #{description}                                     
+                                        h4 связанные инциденты
+                                        each tickets
+                                            div 
+                                                a(href="/tickets/#{_id}") #{type_locale} #{doc_id} #{status_locale}
+                                        a.add-incident.button.hide( data-ticket-id="{{../_id}}") Связать с проблемой этот инцидент
     .row
         a.remove.button.danger Удалить
     
@@ -156,6 +175,11 @@ template(name='showTicket')
             a(href='/tickets') Обращения
         li
             a(href="/tickets/#{_id}") Обращение #{doc_id}
+
+template(name='employeeDetails')
+    h3 Инициатор
+    span #{name} #{position}
+    phone #{phone}
 
 template(name='assignTicket')
     form

@@ -3,6 +3,12 @@
 # 		'active' if Router.current().url is url
 UI.registerHelper 'activeIfUrlIs', (url) ->
 	'active' if Router.current().url is url
+
+Template.availableEmployeeSLAs.helpers
+	'services': ->
+		client = Clients.findOne 'employees._id': Meteor.user().profile.employee._id
+		client.slas
+
 Template.indexEmployeeTickets.helpers
 	'tickets': ->
 		Tickets.find

@@ -5,6 +5,16 @@ template(name='employeeSidebar')
 				a(href='/mytickets') Мои обращения
 			li(class="{{activeIfUrlIs '/mytickets/new'}}")
 				a(href='/mytickets/new') Новое обращение
+			li(class="{{activeIfUrlIs '/mytickets/slas'}}")
+				a(href='/mytickets/slas') Доступные сервисы
+
+template(name='availableEmployeeSLAs')
+	table.table
+		each services
+			tr
+				td #{name}
+				td реакция {{to_duration response}}
+				td решение {{to_duration resolve}}
 
 template(name='indexEmployeeTickets')
 	table.table
