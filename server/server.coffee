@@ -2,6 +2,12 @@
 	minutes_left = (current - new Date()) / 1000
 	parseInt minutes_left / finish * 100
 
+@percentDurationLeft = (duration, total_duration) ->
+	if duration > 0
+		parseInt duration / total_duration * 100
+	else
+		0
+
 Meteor.methods
 	'counter': ->
 		incrementCounter('Tickets')
@@ -24,35 +30,60 @@ Meteor.methods
 	# 		$push:
 	# 			activities:
 	# 				activity
+	'migrateSlas': ->
+		for sla in SLAs.find(incidents: {$exists: false}).fetch()
+			SLAs.update _id: sla._id,
+				$set:
+					incidents:
+						resolve: sla.resolve
+						response: sla.response
+					service_requests:
+						resolve: sla.resolve
+						response: sla.response
+	'resetEmployees': ->
+		Employees.remove()
+		
+		for client in Clients.find(employees:{$exists: true}).fetch()
+			for employee in client.employees
+				console.log employee.name
+				employee.client =
+					_id: client._id
+					name: client.name
+				Employees.insert employee
 
 	'processTickets': ->
 		tickets = Tickets.find({status:{$in: ['classified','assigned']}}).fetch()
-		
-		for ticket in tickets 
-			do (ticket) ->
-				# minutes_left = (ticket.responseAt - new Date()) / 1000
-				# response_percent = parseInt minutes_left / ticket.sla.response * 100
-				# console.log "for ticket #{ticket._id} : #{minutes_left} : #{response_percent}"
+		now = moment()
+		if isWorkday(now) and isWorkhours(now)
+			for ticket in tickets 
+				do (ticket) ->
+					# minutes_left = (ticket.responseAt - new Date()) / 1000
+					# response_percent = parseInt minutes_left / ticket.sla.response * 100
+					# console.log "for ticket #{ticket._id} : #{minutes_left} : #{response_percent}"
+					duration_left = workingHoursBetweenDates(new Date(), ticket.responseAt) * 60 # переводим в секунды
+					Tickets.update _id: ticket._id,
+						$set:
+							response_percent: percentDurationLeft(duration_left, ticket.sla.response)
+							# response_duration_left: (ticket.responseAt - new Date())/1000
+							response_duration_left: duration_left
+							response_breached: ticket.responseAt < new Date()
+					console.log "response tick #{ticket._id} #{ticket.response_percent}"
 
-				Tickets.update _id: ticket._id,
-					$set:
-						response_percent: countPercent(ticket.responseAt, ticket.sla.response)
-						response_duration_left: (ticket.responseAt - new Date())/1000
-						response_breached: ticket.responseAt < new Date()
-				console.log "response tick #{ticket._id} #{ticket.response_percent}"
+			tickets = Tickets.find({status:{$in: ['classified','assigned','in_progress']}}).fetch()
+			for ticket in tickets
+				do (ticket) ->
+					duration_left = workingHoursBetweenDates(new Date(), ticket.resolveAt) * 60 # переводим в секунды
+					Tickets.update _id: ticket._id,
+						$set:
+							resolve_percent: percentDurationLeft(duration_left, ticket.sla.resolve)
+							resolve_duration_left: duration_left
+							# resolve_duration_left: (ticket.resolveAt - new Date())/1000
+							resolve_breached: ticket.resolveAt < new Date()
 
-		tickets = Tickets.find({status:{$in: ['classified','assigned','in_progress']}}).fetch()
-		for ticket in tickets
-			do (ticket) ->
-				Tickets.update _id: ticket._id,
-					$set:
-						resolve_percent: countPercent(ticket.resolveAt, ticket.sla.resolve)
-						resolve_duration_left: (ticket.resolveAt - new Date())/1000
-						resolve_breached: ticket.resolveAt < new Date()
-
-				console.log "resolve tick #{ticket._id} #{ticket.resolve_percent}"
+					console.log "resolve tick #{ticket._id} #{ticket.resolve_percent}"
 
 cron = new Cron()
+## каждую минуту запуск процессинга тикетов
 cron.addJob 1, ->
 	Meteor.call('processTickets')
 

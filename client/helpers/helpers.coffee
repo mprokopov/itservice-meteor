@@ -21,4 +21,5 @@ UI.registerHelper 'ticket_icon', ->
 		when 'Incident' then  'icon-bug'
 		when 'ServiceRequest' then 'icon-basket'
 		when 'Rfc' then 'icon-cog'
-		when 'Feedback' then 'icon-comments'
+		when 'Feedback' then 'icon-comments-2'
+		else 'icon-comments'

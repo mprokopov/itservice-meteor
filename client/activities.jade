@@ -15,7 +15,9 @@ template(name='activities')
                     .padding10
                         p #{description}
                         small
-                            span(data-livestamp=createdAt) #{createdAt}
+                            span {{as_calendar createdAt}}
+                            //- span(data-livestamp=createdAt) #{createdAt}
+                        small трудозатраты {{as_duration duration}}
 
 
 template(name='formActivity')

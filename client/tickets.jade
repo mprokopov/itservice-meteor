@@ -15,8 +15,9 @@ template(name='tickets')
                 td(class=type) #{type_locale}
                 td(class=status_class) #{status_locale}
                 td
+                    span {{as_calendar createdAt}}
                     //span(livestamp(createdAt))
-                    span(data-livestamp=createdAt)
+                    //- span(data-livestamp=createdAt)
 
     +contentFor('navbar')
         li
@@ -63,7 +64,7 @@ template(name='newTicket')
             a(href='/tickets/new') Новое
 
 template(name='showTicket')
-    h1 Тикет #{doc_id} от #{employee.name}
+    h2 #{type_locale} №#{doc_id} от #{employee.name}
     .row
         .span6
             .panel
@@ -108,11 +109,12 @@ template(name='showTicket')
                             .progress-bar.small(data-role="progress-bar" data-value=resolve_percent data-color=resolve_class)
                         h4 
                             | Создан
-                            span(data-livestamp=createdAt) #{createdAt}
+                            span {{as_calendar createdAt}}
                         if classifiedAt
                             h4
                                 | Классифицирован
-                                span(data-livestamp=classifiedAt)  #{classifiedAt}
+                                span {{as_calendar classifiedAt}}
+                                //- span(data-livestamp=classifiedAt)  #{classifiedAt}
                         if isIncident
                             .input-control.checkbox
                                 label
@@ -123,11 +125,13 @@ template(name='showTicket')
                         if assignedAt
                             h4
                                 | Назначен 
-                                span(data-livestamp=assignedAt) #{assignedAt}
+                                span {{as_calendar assignedAt}}
+                                //- span(data-livestamp=assignedAt) #{assignedAt}
                         if respondedAt
                             h4
                                 | В работе
-                                span(data-livestamp=assignedAt) #{respondedAt}
+                                span {{as_calendar respondedAt}}
+                                //- span(data-livestamp=assignedAt) #{respondedAt}
                         
                         h3 Тип тикета #{type_locale}
                         
@@ -136,11 +140,14 @@ template(name='showTicket')
                             span(class=status_class) #{status_locale}
                         if assigned_to
                             h3 Ответственный #{assigned_to.name}
-                        h5 Длительность {{to_duration duration}}
+                        h5 
+                            i.icon-busy
+                            | трудозатраты {{as_duration duration}}
 
                     .frame#user-info
                         with employee
                             +employeeDetails
+                            +clientDetails
                     if classifiedAt
                         .frame#knowledges
                         .frame#problems
@@ -152,7 +159,8 @@ template(name='showTicket')
                             each problems
                                 .panel.problem
                                     .panel-header
-                                        span(data-livestamp=createdAt)
+                                        span {{as_calendar createdAt}}
+                                        //- span(data-livestamp=createdAt)
                                         span #{status_locale}
                                     .panel-content
                                         | #{description}                                     
@@ -161,8 +169,9 @@ template(name='showTicket')
                                             div 
                                                 a(href="/tickets/#{_id}") #{type_locale} #{doc_id} #{status_locale}
                                         a.add-incident.button.hide( data-ticket-id="{{../_id}}") Связать с проблемой этот инцидент
-    .row
-        a.remove.button.danger Удалить
+    if isInRole 'supervisor'
+        .row
+            a.remove.button.danger Удалить
     
     +contentFor('navbar')
         span.element
@@ -178,8 +187,18 @@ template(name='showTicket')
 
 template(name='employeeDetails')
     h3 Инициатор
-    span #{name} #{position}
-    phone #{phone}
+    dl
+        dt ФИО
+        dd #{name} 
+        dt Должность
+        dd #{position}
+        dt телефон
+        dd #{phone}
+        dt email
+        dd #{email}
+
+template(name='clientDetails')
+    h3 Клиент #{client.name}
 
 template(name='assignTicket')
     form

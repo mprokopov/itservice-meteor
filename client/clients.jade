@@ -29,7 +29,7 @@ template(name='clients')
 			li
 				a(href="/clients/#{selected_client._id}/employees") Сотрудники
 			li
-				a(href="/clients/#{selected_client._id}") SLA
+				a(href="/clients/#{selected_client._id}/slas") SLA
 
 template(name='client')
 	.tile.bg-blue.double
@@ -51,10 +51,12 @@ template(name='editClientSLAs')
 		each slas
 			tr
 				td #{name}
-				td {{to_duration response}}
-				td {{to_duration resolve}}
+				td {{to_duration incidents.response}}
+				td {{to_duration incidents.resolve}}
+				td {{to_duration service_requests.response}}
+				td {{to_duration service_requests.resolve}}
 				td
-					a.removeSla(data-client-id="{{../_id}}")
+					a.removeSla(data-client-id="{{../_id}}" data-id=_id)
 						i.icon-remove
 	h2 Доступные SLA
 	table.table
@@ -62,7 +64,7 @@ template(name='editClientSLAs')
 			tr
 				td #{name}
 				td
-					a.addThisSla(data-client-id="{{../_id}}")
+					a.addThisSla(data-client-id="{{../_id}}" data-id=_id)
 						i.icon-upload-3
 
 template(name='selectSLA')

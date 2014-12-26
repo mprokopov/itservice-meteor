@@ -25,7 +25,7 @@ template(name='unclassifiedTickets')
 				td 
 					a(href="/tickets/#{_id}") #{description}
 				td
-					span(data-livestamp=createdAt)
+					span #{created_at_calendar}
 
 template(name='Incidents')
 	h2 Инциденты
@@ -77,9 +77,12 @@ template(name='ticketWithSla')
 					i.icon-mobile
 				
 			unless resolvedAt
-				| {{to_duration resolve_duration_left}} ({{resolve_percent}}%)
+				| {{to_duration resolve_duration_left}} 
 				if resolve_breached
 					i.icon-shit.fg-red
+				else
+					| ({{resolve_percent}}%)
 		td(class=status_class) #{status_locale}
-		td
-			span(data-livestamp=createdAt) #{createdAt}
+		td 
+			span #{created_at_calendar}
+			//- span(data-livestamp=createdAt) #{createdAt}

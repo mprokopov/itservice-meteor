@@ -144,8 +144,9 @@ Template.editClientEmployee.events
 Template.editClientSLAs.events
   'click .removeSla': (event) ->
     Clients.update _id: $(event.currentTarget).data('client-id'),
-      $pop:
+      $pull:
         slas: this
+
   'click a.addThisSla': (event) ->
     sla = SLAs.findOne(_id: @_id)
     Clients.update _id: $(event.currentTarget).data('client-id'),

@@ -1,11 +1,19 @@
 template(name='slas')
 	h1 SLAs
 	table.table
+		tr
+			th название
+			th инцидент реакция
+			th инцидент решение
+			th sr реакция
+			th sr решение
 		each slas
 			tr
 				td #{name}
-				td {{to_duration response}}
-				td {{to_duration resolve}}
+				td {{to_duration incidents.response}}
+				td {{to_duration incidents.resolve}}
+				td {{to_duration service_requests.response}}
+				td {{to_duration service_requests.resolve}}
 				td
 					a.remove
 						i.icon-trash
@@ -19,18 +27,34 @@ template(name='slas')
 
 template(name='newSla')
 	form
+		label
+			| Сервис
 		.input-control.text.span4
-			label
-				| Сервис
-				input(type='text' name='name' value=name)
-		.input-control.text.span2
+			input(type='text' name='name' value=name)
+		br
+		fieldset
+			legend Инциденты
 			label
 				| Время реакции
-				input(type='text' name='response' value=response)
-		.input-control.text.span2
+			.input-control.text.span2
+				input(type='text' name='incident_response' value=response)
+			br
 			label
 				| Время решения
-				input(type='text' name='resolve' value=resolve)
+			.input-control.text.span2
+				input(type='text' name='incident_resolve' value=resolve)
+		fieldset
+			legend Запросы на обслуживание
+			label
+				| Время реакции
+			.input-control.text.span2
+				input(type='text' name='sr_response' value=response)
+			br
+			label
+				| Время решения
+			.input-control.text.span2
+				input(type='text' name='sr_resolve' value=resolve)
+			br
 		.input-control
 			input(type='submit', value='Сохранить SLA')
 	+contentFor('breadcrumbs')

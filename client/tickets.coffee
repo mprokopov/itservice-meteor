@@ -21,6 +21,7 @@ Template.newTicket.events
 Template.newTicket.rendered = ->
 	$('textarea').autosize()
 	$('select').select2()
+	Session.set 'employee_id', $('select').val()
 
 Template.tickets.helpers
 	'tickets': ->
@@ -66,6 +67,15 @@ UI.registerHelper 'status_locale', ->
 			'завершен'
 		when 'closed'
 			'закрыт'
+
+UI.registerHelper 'created_at_calendar', ->
+	moment(@createdAt).calendar()
+
+UI.registerHelper 'as_calendar', (date) ->
+	moment(date).calendar()
+
+UI.registerHelper 'as_duration', (seconds) ->
+	moment.duration(seconds,'s').humanize()
 
 @pad = (num) ->
 	if num < 10
@@ -267,10 +277,26 @@ Template.classifyTicket.events
 	'submit': (event) ->
 		event.preventDefault()
 		sla = SLAs.findOne(_id: event.target.sla_id.value)
+		ticket_type = $('input[name=ticketType]:checked').val()
 		# sla = Clients.findOne('slas._id': event.target.sla_id.value)
-
-		responseAt = new Date(@createdAt.getTime() + sla.response * 1000)
-		resolveAt = new Date(@createdAt.getTime() + sla.resolve * 1000)
+		switch ticket_type
+			when 'Incident'
+				sla.resolve = sla.incidents.resolve
+				sla.response = sla.incidents.response
+				responseAt = dateFromDuration(sla.response)
+				resolveAt = dateFromDuration(sla.resolve)
+				console.log 'incident classified'
+			when 'ServiceRequest'
+				sla.resolve = sla.service_requests.resolve
+				sla.response = sla.service_requests.response
+				responseAt = dateFromDuration(sla.response)
+				resolveAt = dateFromDuration(sla.resolve)
+				console.log 'sr classified'
+			else
+				responseAt = dateFromDuration(sla.response)
+				resolveAt = dateFromDuration(sla.resolve)
+		# responseAt = new Date(@createdAt.getTime() + sla.response * 1000)
+		# resolveAt = new Date(@createdAt.getTime() + sla.resolve * 1000)
 		
 		# activity=
 		# 	description: "Классифицировал как #{$('input[name=ticketType]:checked').val()}"

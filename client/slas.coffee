@@ -18,8 +18,14 @@ Template.newSla.events
 		
 		SLAs.insert
 			name: event.target.name.value
-			response: durationFromString(event.target.response.value)
-			resolve: durationFromString(event.target.resolve.value)
+			incidents:
+				response: durationFromString(event.target.incident_response.value)
+				resolve: durationFromString(event.target.incident_resolve.value)
+			service_requests:
+				response: durationFromString(event.target.sr_response.value)
+				resolve: durationFromString(event.target.sr_resolve.value)
+			# response: durationFromString(event.target.response.value)
+			# resolve: durationFromString(event.target.resolve.value)
 			createdAt: new Date()
 		
 		Router.go '/slas'

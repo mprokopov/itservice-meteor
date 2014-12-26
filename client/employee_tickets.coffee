@@ -13,6 +13,10 @@ Template.indexEmployeeTickets.helpers
 	'tickets': ->
 		Tickets.find
 			'employee._id': Meteor.user().profile.employee._id
+			{
+				sort:
+					createdAt: -1
+			}
 Template.newEmployeeTicket.events
 	'submit': (event) ->
 		event.preventDefault()

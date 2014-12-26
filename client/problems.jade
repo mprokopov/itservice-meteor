@@ -9,7 +9,7 @@ template(name='Problems')
 				td 
 					a(href="/problems/#{_id}") #{status_locale}
 				td 
-					span(data-livestamp=createdAt)
+					span {{as_calendar createdAt}}
 				td
 					a.remove(href='#') удалить
 template(name='problemIncident')
@@ -17,7 +17,7 @@ template(name='problemIncident')
 		a(href="/tickets/#{_id}") Инцидент #{doc_id}
 	
 	p #{description}
-	span(data-livestamp=createdAt)
+	span {{as_calendar createdAt}}
 
 template(name='showProblem')
 	form

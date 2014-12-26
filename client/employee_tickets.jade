@@ -10,14 +10,22 @@ template(name='employeeSidebar')
 
 template(name='availableEmployeeSLAs')
 	table.table
+		tr
+			th sla
+			th реакция инц
+			th решение инц
+			th реакция sr
+			th решение sr
 		each services
 			tr
 				td #{name}
-				td реакция {{to_duration response}}
-				td решение {{to_duration resolve}}
+				td {{to_duration incidents.response}}
+				td {{to_duration incidents.resolve}}
+				td {{to_duration service_requests.response}}
+				td {{to_duration service_requests.resolve}}
 
 template(name='indexEmployeeTickets')
-	table.table
+	table.table.striped
 		each tickets
 			+employeeTicket
 
@@ -54,7 +62,9 @@ template(name='formNewEmployeeActivity')
 template(name='employeeTicket')
 	tr
 		td
-			a(href="/mytickets/{{_id}}") #{doc_id} #{type_locale}
+			a(href="/mytickets/{{_id}}") 
+				i(class=ticket_icon)
+				|#{doc_id} 
 			
 		td 
 			if classifiedAt 
@@ -65,4 +75,4 @@ template(name='employeeTicket')
 				|ответственный #{assigned_to.name}
 		td(class=status_class) #{status_locale}
 		td 
-			span(data-livestamp=createdAt)
+			span {{as_calendar createdAt}}
