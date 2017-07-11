@@ -23,6 +23,7 @@ Tickets classified with service recieve response time and resolution time.
 
 ![Screenshot 4](/docs/shot4.png?raw=true "Screenshot 4")
 
+Realtime chat in ticket comments implemented!
 
 
 All this is highly dynamic, works in realtime and MongoDB based.
