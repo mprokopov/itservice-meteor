@@ -30,7 +30,7 @@ Meteor.methods
 	# 		$push:
 	# 			activities:
 	# 				activity
-	'migrateSlas': ->
+	migrateSlas: ->
 		for sla in SLAs.find(incidents: {$exists: false}).fetch()
 			SLAs.update _id: sla._id,
 				$set:
@@ -40,7 +40,7 @@ Meteor.methods
 					service_requests:
 						resolve: sla.resolve
 						response: sla.response
-	'resetEmployees': ->
+	resetEmployees: ->
 		Employees.remove()
 		
 		for client in Clients.find(employees:{$exists: true}).fetch()
@@ -51,7 +51,7 @@ Meteor.methods
 					name: client.name
 				Employees.insert employee
 
-	'processTickets': ->
+	processTickets: ->
 		tickets = Tickets.find({status:{$in: ['classified','assigned']}}).fetch()
 		now = moment()
 		if isWorkday(now) and isWorkhours(now)
@@ -81,6 +81,17 @@ Meteor.methods
 							resolve_breached: ticket.resolveAt < new Date()
 
 					console.log "resolve tick #{ticket._id} #{ticket.resolve_percent}"
+	
+	sendClassificationNotification: (ticket) ->
+		@unblock()
+
+		Email.send
+			from: 'website@it-premium.com.ua'
+			to: ticket.employee.email
+			replyTo: 'support@it-premium.com.ua'
+			subject: 'Ваше обращение успешно классифицировано'
+			# html: Blaze.toHTMLWithData(Template.classificationNotification, ticket)
+			text: "Обращение #{ticket.doc_id} успешно классифицировано как #{ticket.type}."
 
 cron = new Cron()
 ## каждую минуту запуск процессинга тикетов

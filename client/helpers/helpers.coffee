@@ -23,3 +23,12 @@ UI.registerHelper 'ticket_icon', ->
 		when 'Rfc' then 'icon-cog'
 		when 'Feedback' then 'icon-comments-2'
 		else 'icon-comments'
+
+UI.registerHelper 'problem_status_class', ->
+	switch @status
+		when 'open'
+			'bg-red'
+		when 'workaround'
+			'bg-indigo'
+		when 'solved'
+			'bg-green'

@@ -6,6 +6,8 @@
 # @Agents = Meteor.users
 @Activities = new Mongo.Collection('Activities')
 @SLAs = new Mongo.Collection('SLAs')
+@Changes = new Mongo.Collection('Changes')
+@Knowledges = new Mongo.Collection('Knowledges')
 
 # Accounts.config
 # 	restrictCreationByEmailDomain: 'it-premium.com.ua'

@@ -1,0 +1,30 @@
+template(name='knowledgesIndex')
+	h2 База знаний
+	table.table
+		each knowledges
+			tr
+				td 
+					+linkTo route='knowledge.show'
+						|#{client.name}
+				td #{sla.name}
+				td {{as_calendar createdAt}}
+				td
+					a.remove
+						i.icon-remove.fg-red
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='knowledges.index'
+				| Знания
+
+template(name='showKnowledge')
+	h2 Знание #{client.name} #{sla.name}
+	h5 Автор #{author.name} создано {{as_calendar createdAt}}
+	p #{description}
+
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='knowledges.index'
+				| Знания
+		li
+			+linkTo route='knowledge.show'
+				| #{client.name} #{sla.name}

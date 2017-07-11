@@ -1,4 +1,9 @@
 template(name='activities')
+    .input-control.checkbox
+        label
+            input#hide_automated(type='checkbox' checked=hideAutomated)
+            span.check
+            | скрыть автоматические
     each activities
         .row
             .span2
@@ -32,4 +37,4 @@ template(name='formActivity')
         .input-control.text.size2
             input(type='text' name='duration' value='00:05')
         .input-control
-            input(type='submit')
+            input.default(type='submit')

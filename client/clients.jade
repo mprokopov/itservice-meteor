@@ -43,6 +43,13 @@ template(name='client')
 template(name='editClient')
 	h1 Изменить #{name}
 	+clientForm
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='clients.index'
+				| Клиенты
+		li
+			+linkTo route='client.show'
+				| изменить #{name}
 
 template(name='editClientSLAs')
 	h1 Клиент #{name}
@@ -83,6 +90,11 @@ template(name='clientForm')
 		label адрес
 		.input-control.text
 			input(name='address', type='text' value=address)
+		.input-control.checkbox
+			label
+				input(name='active', type='checkbox' checked=active)
+				span.check
+				| активен
 		.input-control
 			input(type='submit')
 
@@ -96,21 +108,44 @@ template(name='clientEmployees')
 			a(href="./employees/new") Новый сотрудник
 	+contentFor('breadcrumbs')
 		li
-			a(href='/clients') Клиенты
+			+linkTo route='clients.index'
+				| Клиенты
 		li
-			a(href="/clients/#{_id}") #{name} #{_id}
+			+linkTo route='clients.index'
+				| #{name}
+		li
+			+linkTo route='client.employees.index'
+				| сотрудники
+
 	h1 Сотрудники клиента #{name}
 	each employees
 		+employee
 
 template(name='clientEmployee')
 	h1 #{name}
-	span #{name}
-	span #{position}
-	span #{email}
-	span #{phone}
-	
-	a.button(href="/clients/{{client._id}}/employees/{{_id}}/edit") изменить
+	.row
+		.span2 #{name}
+		.span2 #{position}
+		.span4 #{email}
+		.span2 #{phone}
+		.span2
+			a.button(href="/clients/{{client._id}}/employees/{{_id}}/edit") изменить
+			a.remove(data-client-id=client._id)
+				i.icon-remove.fg-red
+
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='clients.index'
+				| Клиенты
+		li
+			+linkTo route='client.show'
+				| #{client.name}
+		li
+			+linkTo route='client.employees.index'
+				| сотрудники
+		li
+			+linkTo route='client.employee'
+				| #{name}
 
 template(name='employee')
 	.tile.double
@@ -125,7 +160,6 @@ template(name='employee')
 			img(src=picture)
 		.tile-status
 			span.label.fg-blue #{name}
-
 template(name='newClientEmployee')
 	h1 Новый сотрудник в #{name}
 	+employeeForm

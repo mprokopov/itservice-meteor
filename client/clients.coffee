@@ -50,6 +50,7 @@ Template.newClient.events
       name: event.target.name.value
       email: event.target.email.value
       address: event.target.email.value
+      active: event.target.active.checked      
       createdAt: new Date()
       employees: []
 
@@ -63,12 +64,23 @@ Template.editClient.events
         name: event.target.name.value
         email: event.target.email.value
         address: event.target.address.value
+        active: event.target.active.checked      
         updatedAt: new Date()
     Router.go "/clients"
 
 Template.clientEmployees.helpers
   'employees': ->
     this.employees
+
+Template.clientEmployee.events
+  'click a.remove': (event) ->
+    event.preventDefault()
+    if confirm 'Хотите удалить сотрудника?'
+      Clients.update _id: $(this).data('client-id'),
+        $pull:
+          employees:
+            _id: @_id
+      Employees.remove _id: @_id
 
 Template.newClientEmployee.events
   'submit': (event) ->

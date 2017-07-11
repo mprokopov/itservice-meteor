@@ -3,6 +3,7 @@ template(name='Dashboard')
 	+unclassifiedTickets
 	+majorTickets
 	+myTickets
+	+outdoorTickets
 	+Incidents
 	+ServiceRequests
 	+Rfcs
@@ -11,11 +12,13 @@ template(name='Dashboard')
 			a(href='/tickets/new')
 				i.icon-file
 				| Создать
+
 template(name='myTickets')
 	h2 Мои тикеты
 	table.table
 		each tickets
 			+ticketWithSla
+
 template(name='unclassifiedTickets')
 	h2 Неклассифицированные тикеты
 	table.table
@@ -25,10 +28,16 @@ template(name='unclassifiedTickets')
 				td 
 					a(href="/tickets/#{_id}") #{description}
 				td
-					span #{created_at_calendar}
+					span {{as_calendar createdAt}}
 
 template(name='Incidents')
 	h2 Инциденты
+	table.table
+		each tickets
+			+ticketWithSla
+
+template(name='outdoorTickets')
+	h2 Выездные обращения
 	table.table
 		each tickets
 			+ticketWithSla
@@ -55,17 +64,25 @@ template(name='Rfcs')
 
 template(name='ticketWithSla')
 	tr
-		td 
-			if is_major
-				i.icon-fire.fg-red
-			i(class=ticket_icon)
-			| #{doc_id}
-			if reclassified
-				i.icon-cycle.fg-red(title='реклассифицирован')
+		td.span2
+			+linkTo route='ticket.show'
+				if is_major
+					i.icon-fire.fg-red
+				i(class=ticket_icon)
+				|&nbsp;
+				span #{doc_id}
+				if is_outdoor
+					|&nbsp;
+					i.icon-bus
+				if reclassified
+					|&nbsp;
+					i.icon-cycle.fg-red(title='реклассифицирован')
 		td #{employee.name} из #{employee.client.name}
-		td 
-			a(href="/tickets/#{_id}") #{description}
-		td 
+		td #{description}
+			//- a(href="/tickets/#{_id}") #{description}
+			//- +linkTo route='ticket.show'
+			//- 	|#{description}
+		td.span3
 			if respondedAt
 				if response_breached
 					i.icon-mobile.fg-red
@@ -82,7 +99,7 @@ template(name='ticketWithSla')
 					i.icon-shit.fg-red
 				else
 					| ({{resolve_percent}}%)
-		td(class=status_class) #{status_locale}
+		td.span2(class=status_class) #{status_locale}
 		td 
 			span #{created_at_calendar}
 			//- span(data-livestamp=createdAt) #{createdAt}

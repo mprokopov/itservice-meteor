@@ -5,20 +5,16 @@ template(name='ApplicationLayout')
 		.container
 			+navbar
 			+breadcrumbs
-			if isInRole 'agent'
-				.grid.fluid
-					.row
-						.span3
+			.grid.fluid
+				.row
+					.span3
+						if isInRole 'agent'
 							+sidebar
-						.span9
-							+yield
-			if isInRole 'employee'
-				.grid.fluid
-					.row
-						.span3
+						if isInRole 'employee'
 							+employeeSidebar
-						.span9
-							+yield
+					.span9
+						+yield
+
 template(name='breadcrumbs')
 	nav.breadcrumbs.small
 		ul
@@ -42,39 +38,58 @@ template(name='sidebar')
 	nav.sidebar.light
 		ul
 			li.stick.bg-blue(class="{{isActiveRoute regex='Dashboard'}}")
-				a(href='/') Центр управления
+				a(href='/') 
+					i.icon-dashboard
+					|Центр управления
 			li.stick.bg-orange(class="{{isActivePath regex='/tickets'}}")
-				a(href='/tickets') Обращения
+				a(href='/tickets') 
+					i.icon-comments-2
+					|Обращения
 			li
 				ul.sub-menu(style='display:block;')
 					li(class="{{isActivePath regex='/incidents'}}")
 						a(href='/incidents')
 							i.icon-bug.on-left
 							| Инциденты
-					li
+					li(class="{{isActivePath regex='/service_requests'}}")
 						a(href='/service_requests')
 							i.icon-basket.on-left
 							| Запр на обсл
-					li
+					li(class="{{isActivePath regex='/rfcs'}}")
 						a(href='/rfcs')
 							i.icon-cog.on-left
 							| Запр на изм
-			li
-				a(href='/changes') Изменения
-			li.stick.bg-green
-				a(href='/problems') Проблемы
-			li.stick.bg-darkPink
-				a(href='/knowledges') Знания
+			li(class="{{isActivePath regex='/changes'}}")
+				a(href='/changes')
+					i.icon-tools
+					|Изменения
+			li.stick.bg-green(class="{{isActivePath regex='/problems'}}")
+				a(href='/problems')
+					i.icon-shit
+					|Проблемы
+			li.stick.bg-darkPink(class="{{isActivePath regex='/knowledges'}}")
+				a(href='/knowledges') 
+					i.icon-book
+					|Знания
+			li.stick.bg-darkPink(class="{{isActivePath regex='/cmdb'}}")
+				a(href='/cmdb') 
+					i.icon-cabinet
+					|CMDB
 			li.stick.darkBlue(class="{{isActivePath regex='/clients'}}")
-				a(href='/clients') Клиенты
-			li.stick.bg-magenta(class="{{isActivePath regex='/agents'}}")
-				a(href='/agents') Агенты
-			li.stick.bg-red
-				a.dropdown-toggle Настройки SLA
-				ul.sub-menu(data-role='dropdown')
-					li
-						a(href='/slas') Сервисы
-					li
-						a Категории
-					li
-						a Уровни
+				+linkTo route='clients.index'
+					i.icon-address-book
+					|Клиенты
+			if isInRole 'supervisor'
+				li.stick.bg-magenta(class="{{isActivePath regex='/agents'}}")
+					a(href='/agents') Агенты
+				li.stick.bg-red
+					a.dropdown-toggle Настройки SLA
+					ul.sub-menu(data-role='dropdown')
+						li
+							a(href='/slas') 
+								i.icon-puzzle.on-left
+								|Сервисы
+						li
+							a Категории
+						li
+							a Уровни

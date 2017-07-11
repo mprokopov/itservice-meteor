@@ -1,0 +1,71 @@
+template(name='changesIndex')
+	h1 Изменения
+	table.table
+		each changes
+			tr
+				td.span2
+					a(href="/changes/#{_id}")
+						span {{as_calendar createdAt}}
+				td.span4 #{sla.name}
+				td.span4 #{client.name}
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='changes.index'
+				| Изменения
+
+template(name='showChange')
+	h2 Изменение услуги #{sla.name} клиента #{employee.client.name} 
+	h5 
+		|Rfc 
+		a(href="/tickets/#{ticket._id}") № #{ticket.doc_id}
+	h4 запланировано на {{as_calendar timeslotAt}}
+	p #{ticket.description}
+	h3 Preinstall
+	p #{preinstall}
+	h3 Install
+	p #{install}
+	h3 PostInstall
+	p #{postinstall}
+	+formActivity
+	+activities
+
+	+contentFor('breadcrumbs')
+		li
+			a(href='/changes') Изменения
+		li
+			a(href='/changes/#{_id}') Изменение #{sla.name} #{client.name}
+	
+	a.button.danger.remove(href="#")
+		i.icon-remove
+		| удалить
+
+
+template(name='newChange')
+	h2 Изменение услуги #{sla.name} клиента #{employee.client.name} 
+	h5 Описание Rfc #{doc_id}
+	p #{description}
+	.row
+		.span6
+			form
+				input(type='hidden' name='ticket_id' value=_id)
+				input(type='hidden' name='timeslot')
+				label Preinstall
+				.input-control.textarea
+					textarea(name='preinstall')
+				label Install
+				.input-control.textarea
+					textarea(name='install')
+				label PostInstall
+				.input-control.textarea
+					textarea(name='postinstall')
+				.input-control
+					input(type='submit')
+		.span6
+			h4 Запланировать
+			div.calendar.small(data-role='calendar' data-locale='ru')
+
+	+contentFor('breadcrumbs')
+		li
+			a(href='/changes') Изменения
+		li
+			a(href='/changes/new') Новое

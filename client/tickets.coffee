@@ -1,9 +1,9 @@
 Template.newTicket.events
 	'change select': (event) ->
 		Session.set('employee_id', event.currentTarget.value)
+	
 	'submit': (event) ->
 		event.preventDefault()
-		# console.log event.target.employee_id.value
 		employee = Employees.findOne({_id: event.target.employee_id.value})
 		
 		Meteor.call 'counter', (err, result) =>
@@ -20,7 +20,8 @@ Template.newTicket.events
 
 Template.newTicket.rendered = ->
 	$('textarea').autosize()
-	$('select').select2()
+	$('select').select2
+		width: 'element'
 	Session.set 'employee_id', $('select').val()
 
 Template.tickets.helpers
@@ -87,16 +88,38 @@ UI.registerHelper 'as_duration', (seconds) ->
 Template.newTicket.helpers
 	'employees': ->
 		Employees.find()
-	'employee': ->
+	
+	'selected_employee': ->
 		Employees.findOne
 			_id: Session.get('employee_id')
+	
 	'tickets': ->
 		Tickets.find
 			'employee._id': Session.get('employee_id')
 			'createdAt': 
-			 	$gt: new Date(ISODate().getTime() - 1000 * 3600 * 48) # предыдущие 48 часов
+			 	$gt: new Date(new Date().getTime() - 1000 * 3600 * 48) # предыдущие 48 часов
+	
+	'client_tickets': ->
+		Tickets.find
+			'employee.client._id': Employees.findOne(_id: Session.get('employee_id')).client._id
+			'employee._id': 
+				$ne: Session.get 'employee_id'
+			'createdAt': 
+			 	$gt: new Date(new Date().getTime() - 1000 * 3600 * 48) # предыдущие 48 часов
 
 Template.showTicket.events
+	'click button#new-knowledge': (event) ->
+		event.preventDefault()
+		
+		Knowledges.insert
+			sla: @sla
+			client: @employee.client
+			description: $('#knowledge-description').val()
+			createdAt: new Date()
+			author: Meteor.user().profile.agent
+			tickets: [ @_id ]
+		$('#knowledge-description').val('')
+
 	'click a.new-problem': (event) ->
 		event.preventDefault()
 		Problems.insert
@@ -110,12 +133,19 @@ Template.showTicket.events
 		$('#problem-description').val('')
 
 	'click a.remove': ->
-		Tickets.remove(@_id)
-		Router.go('/tickets')
+		if confirm("Точно хотите удалить этот тикет?")
+			for activity in Tickets.findOne({_id: @_id}).activities
+				Activities.remove _id: activity._id
+
+			Tickets.remove _id: @_id
+			Router.go 'tickets.index'
+
 	'mouseenter .panel.problem': (event) ->
 		$(event.currentTarget).find('a.add-incident').toggleClass('hide')
+
 	'mouseleave .panel.problem': (event) ->
 		$(event.currentTarget).find('a.add-incident').toggleClass('hide')
+
 	'click a.add-incident': (event) ->
 		event.preventDefault()
 		Problems.update _id: @_id,
@@ -129,26 +159,62 @@ Template.showTicket.events
 			$set:
 				is_major: event.currentTarget.checked
 
+	'click #is_outdoor': (event) ->
+		console.log event.currentTarget.checked
+		Tickets.update _id: @_id,
+			$set:
+				is_outdoor: event.currentTarget.checked
+
 Template.showTicket.helpers
+	'change': ->
+		if @type is 'Rfc' and @change?
+			Changes.findOne _id: @change
+		else
+			null
 	'problems': ->
 		if @sla
 			Problems.find
 				'sla._id': @sla._id
 				'client._id': @employee.client._id
+	'changes_count': ->
+		if @change
+			Changes.find
+				'ticket._id': @_id
+			.count()
+		else
+			0
 	'problems_count': ->
 		if @sla
 			Problems.find
 				'sla._id': @sla._id
 				'client._id': @employee.client._id
 			.count()
+	'knowledges': ->
+		if @sla
+			Knowledges.find
+				'sla._id': @sla._id
+				'client._id': @employee.client._id
+	'knowledges_count': ->
+		if @sla
+			Knowledges.find
+				'sla._id': @sla._id
+				'client._id': @employee.client._id
+			.count()
+
 	'isIncident': ->
 		@type is 'Incident'
+	'isRfc': ->
+		@type is 'Rfc'	
 	'isClassified': ->
 		@status is 'classified'
 	'isAssigned': ->
 		@status is 'assigned'
 	'isInProgress': ->
 		@status is 'in_progress'
+	'notResponded': ->
+		@status is 'assigned' or @status is 'classified'
+	'notResolved': ->
+		@status is 'assigned' or @status is 'classified' or @status is 'in_progress'
 	'response_class': ->
 		switch 
 			when 75 < @response_percent
@@ -170,13 +236,6 @@ Template.showTicket.helpers
 			else
 				'bg-crimson'
 
-	
-	# 'response_percent': ->
-	# 	minutes_left = (@responseAt - new Date()) / 1000
-	# 	parseInt minutes_left / @sla.response * 100
-	
-	# 'resolve_percent': ->
-	# 	@resolveAt - new Date()
 
 Template.processTicket.events
 	'click button.process': ->
@@ -213,6 +272,15 @@ Template.assignTicket.events
 
 Template.showTicket.rendered = ->
 	$.Metro.initAll()
+	# $.Metro.initCalendars("#changes")
+	# $('.calendar').calendar()
+
+Template.outdoorTickets.helpers
+	'tickets': ->
+		Tickets.find
+			is_outdoor: true
+			status:
+				$in: ['classified', 'assigned', 'in_progress']
 
 Template.unclassifiedTickets.helpers
 	'tickets': ->
@@ -341,6 +409,8 @@ Template.classifyTicket.events
 
 
 		Meteor.call('processTickets')
+		Meteor.call 'sendClassificationNotification', Tickets.findOne _id: @_id
+
 
 Template.assignTicket.helpers
 	'agents': ->

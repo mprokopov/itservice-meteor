@@ -1,6 +1,8 @@
 Template.Problems.helpers
 	'problems': ->
-		Problems.find()
+		Problems.find {},
+			sort:
+				createdAt: -1
 	'status_locale': ->
 		switch @status
 			when 'open'
@@ -20,7 +22,8 @@ Template.showProblem.helpers
 
 Template.Problems.events
 	'click a.remove': (event) ->
-		Problems.remove @_id
+		if confirm("Вы точно хотите удалить?")
+			Problems.remove @_id
 	'click button': (event) ->
 		Meteor.call 'addRecord', 
 		(err,result) ->
@@ -35,4 +38,5 @@ Template.showProblem.events
 				description: event.target.description.value
 				workaround: event.target.workaround.value
 				solution: event.target.solution.value
-		Router.go '/problems'
+				updatedAt: new Date()
+		Router.go 'problems.index'

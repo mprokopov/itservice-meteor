@@ -1,250 +1,305 @@
 template(name='employeeTickets')
-    table.table
-        each tickets
-            +ticketWithSla
+	table.table
+		each tickets
+			+ticketWithSla
 
 template(name='tickets')
-    table.table
-        each tickets
-            tr
-                td #{employee.name}
-                td #{employee.client.name}
-                td
-                    +linkTo(route='ticket.show' data=getData)
-                        span #{description}
-                td(class=type) #{type_locale}
-                td(class=status_class) #{status_locale}
-                td
-                    span {{as_calendar createdAt}}
-                    //span(livestamp(createdAt))
-                    //- span(data-livestamp=createdAt)
+	h2 Обращения
+	table.table
+		each tickets
+			tr
+				td 
+					+linkTo(route='ticket.show')
+						if is_major
+							i.icon-fire.fg-red
+						i(class=ticket_icon)
+						|&nbsp;
+						span #{doc_id}
+						if is_outdoor
+							|&nbsp;
+							i.icon-bus
+						if reclassified
+							|&nbsp;
+							i.icon-cycle.fg-red(title='реклассифицирован')
+						
+				td #{employee.name}
+				td #{employee.client.name}
+				td #{description}
+				td(class=type) #{type_locale}
+				td(class=status_class) #{status_locale}
+				td
+					span {{as_calendar createdAt}}
 
-    +contentFor('navbar')
-        li
-            a(href='/tickets/new')
-                i.icon-file
-                | Создать
+	+contentFor('navbar')
+		li
+			+linkTo route='tickets.new'
+				i.icon-file
+				| Создать
 
-    +contentFor('breadcrumbs')
-        li
-            a(href='/tickets') Обращения
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='tickets.index'
+				| Обращения
 
 
 template(name='newTicket')
-    .span6
-        form
-            label Сотрудник
-            .input-control
-                select(name='employee_id')
-                    each employees
-                        option(value=_id) #{name} #{position} из #{client.name}
-            label Описание
-            .input-control.textarea
-                textarea(name='description')
-            .input-control
-                input(type='submit', value='Сохранить обращение')
-    .span6
-        if employee
-            .panel
-                .panel-header
-                    | #{employee.name}
-                .panel-content
-                    span должность #{employee.position}
-                    address email #{employee.email}
-                    phone #{employee.phone}
-        each tickets
-            span #{description}
-            span #{createdAt}
-            hr
-    
-    +contentFor('breadcrumbs')
-        li
-            a(href='/tickets') Обращения
-        li
-            a(href='/tickets/new') Новое
+	.span6
+		form
+			label Сотрудник
+			.input-control
+				select(name='employee_id')
+					each employees
+						option(value=_id) #{name} #{position} из #{client.name}
+			label Описание
+			.input-control.textarea
+				textarea(name='description')
+			.input-control
+				input(type='submit', value='Сохранить обращение')
+	.span6
+		if selected_employee
+			with selected_employee
+				.panel
+					.panel-header
+						| #{name}
+					.panel-content
+						span должность #{position}
+						address email #{email}
+						phone #{phone}
+			h3 Тикеты сотрудника
+			each tickets
+				h5
+					i(class=ticket_icon)
+					a(href="tickets/#{_id}") #{doc_id} #{type_locale}
+					| {{as_calendar createdAt}}
+				span #{description}
+				hr
+			h3 Другие тикеты компании
+			each client_tickets
+				h5
+					i(class=ticket_icon)
+					a(href="tickets/#{_id}") #{doc_id} #{type_locale}
+					| {{as_calendar createdAt}}
+				h5 От #{employee.name}
+				span #{description}
+				hr
+	
+	+contentFor('breadcrumbs')
+		li
+			a(href='/tickets') Обращения
+		li
+			a(href='/tickets/new') Новое
 
 template(name='showTicket')
-    h2 #{type_locale} №#{doc_id} от #{employee.name}
-    .row
-        .span6
-            .panel
-                .panel-content
-                    p #{description}
-            unless type
-                +classifyTicket
-            if isClassified
-                +assignTicket
-            if isAssigned
-                +processTicket
-            if isInProgress
-                +finishTicket
-            +formActivity
-            +activities
-        .span6
-            .tab-control(data-role='tab-control')
-                ul.tabs
-                    li.active
-                        a(href='#page1') Инфо
-                    li
-                        a(href='#user-info')
-                            i.icon-user
-                            | Инициатор
-                    if classifiedAt
-                        li
-                            a(href='#knowledges')
-                                | Знания
-                        li
-                            a(href='#problems')
-                                | Проблемы #{problems_count}
-                .frames
-                    .frame#page1.active
-                        h2 ID #{doc_id}
-                        if sla
-                            h2 #{sla.name} реакция: {{to_duration response_duration_left}} из {{to_duration sla.response}} решение {{to_duration resolve_duration_left}} из {{to_duration sla.resolve}}
-                        if response_percent
-                            | осталось реакции #{response_percent}%
-                            .progress-bar.small(data-role="progress-bar" data-value=response_percent data-color=response_class)
-                        if resolve_percent
-                            | осталось решения #{resolve_percent}%
-                            .progress-bar.small(data-role="progress-bar" data-value=resolve_percent data-color=resolve_class)
-                        h4 
-                            | Создан
-                            span {{as_calendar createdAt}}
-                        if classifiedAt
-                            h4
-                                | Классифицирован
-                                span {{as_calendar classifiedAt}}
-                                //- span(data-livestamp=classifiedAt)  #{classifiedAt}
-                        if isIncident
-                            .input-control.checkbox
-                                label
-                                    input#is_major(type='checkbox' checked=is_major)
-                                    span.check
-                                    i.icon-fire.fg-red
-                                    | массовый инцидент
-                        if assignedAt
-                            h4
-                                | Назначен 
-                                span {{as_calendar assignedAt}}
-                                //- span(data-livestamp=assignedAt) #{assignedAt}
-                        if respondedAt
-                            h4
-                                | В работе
-                                span {{as_calendar respondedAt}}
-                                //- span(data-livestamp=assignedAt) #{respondedAt}
-                        
-                        h3 Тип тикета #{type_locale}
-                        
-                        h4 
-                            | Статус
-                            span(class=status_class) #{status_locale}
-                        if assigned_to
-                            h3 Ответственный #{assigned_to.name}
-                        h5 
-                            i.icon-busy
-                            | трудозатраты {{as_duration duration}}
+	h2 
+		i(class=ticket_icon)
+		|#{type_locale} №#{doc_id} 
+		span(class=status_class) #{status_locale}
+	.row
+		.span6
+			h2 #{employee.name} из #{employee.client.name}
+			div.notice.marker-on-top.fg-white.ribbed-orange #{description}
+			unless type
+				+classifyTicket
+			if isClassified
+				+assignTicket
+			if isAssigned
+				+processTicket
+			if isInProgress
+				+finishTicket
+			+formActivity
+			+activities
+		.span6
+			.tab-control(data-role='tab-control')
+				ul.tabs
+					li.active
+						a(href='#page1') Инфо
+					li
+						a(href='#user-info')
+							i.icon-user
+					if classifiedAt
+						li
+							a(href='#knowledges')
+								i.icon-book
+								|#{knowledges_count}
+						li
+							a(href='#problems')
+								i.icon-shit
+								| Проблемы #{problems_count}
+					if isRfc
+						li
+							a(href='#changes')
+								i.icon-tools
+								| #{changes_count}
+				.frames
+					.frame#page1.active
+						if sla
+							h2 #{sla.name} 
+							h3 реакция: {{to_duration response_duration_left}} из {{to_duration sla.response}} решение {{to_duration resolve_duration_left}} из {{to_duration sla.resolve}}
+							if notResponded
+								| осталось реакции #{response_percent}%
+								.progress-bar.small(data-role="progress-bar" data-value=response_percent data-color=response_class)
+							if notResolved
+								| осталось решения #{resolve_percent}%
+								.progress-bar.small(data-role="progress-bar" data-value=resolve_percent data-color=resolve_class)
+						if isIncident
+							.input-control.checkbox
+								label
+									input#is_major(type='checkbox' checked=is_major)
+									span.check
+									i.icon-fire.fg-red
+									| массовый инцидент
+						.input-control.checkbox
+							label
+								input#is_outdoor(type='checkbox' checked=is_outdoor)
+								span.check
+								i.icon-bus
+								| требуется выезд
+						dl
+							dt Создан
+							dd {{as_calendar createdAt}}
+							if classifiedAt
+								dt Классифицирован
+								dd {{as_calendar classifiedAt}}
 
-                    .frame#user-info
-                        with employee
-                            +employeeDetails
-                            +clientDetails
-                    if classifiedAt
-                        .frame#knowledges
-                        .frame#problems
-                            h2 Связанные проблемы
-                            label Описание проблемы
-                            .input-control.textarea
-                                textarea#problem-description(name='problem')
-                            a.new-problem.button Создать проблему
-                            each problems
-                                .panel.problem
-                                    .panel-header
-                                        span {{as_calendar createdAt}}
-                                        //- span(data-livestamp=createdAt)
-                                        span #{status_locale}
-                                    .panel-content
-                                        | #{description}                                     
-                                        h4 связанные инциденты
-                                        each tickets
-                                            div 
-                                                a(href="/tickets/#{_id}") #{type_locale} #{doc_id} #{status_locale}
-                                        a.add-incident.button.hide( data-ticket-id="{{../_id}}") Связать с проблемой этот инцидент
-    if isInRole 'supervisor'
-        .row
-            a.remove.button.danger Удалить
-    
-    +contentFor('navbar')
-        span.element
-            a(href='/tickets/new')
-                i.icon-file
-                | Создать
-                
-    +contentFor('breadcrumbs')
-        li
-            a(href='/tickets') Обращения
-        li
-            a(href="/tickets/#{_id}") Обращение #{doc_id}
+							if assignedAt
+								dt Назначен 
+								dd {{as_calendar assignedAt}}
+
+							if respondedAt
+								dt В работе
+								dd {{as_calendar respondedAt}}
+							if resolvedAt
+								dt Завершен
+								dd {{as_calendar resolvedAt}}
+
+						if assigned_to
+							h3 Ответственный #{assigned_to.name}
+						h5 
+							i.icon-busy
+							| трудозатраты {{as_duration duration}}
+						if isInRole 'supervisor'
+							.row
+								a.remove.button.danger Удалить
+
+					.frame#user-info
+						with employee
+							+employeeDetails
+							+clientDetails
+					
+					if classifiedAt
+						.frame#knowledges
+							.input-control.textarea
+								textarea#knowledge-description(name='knowledge-description')
+							button#new-knowledge Создать знание
+							each knowledges
+								.panel
+									.panel-header
+										| {{as_calendar createdAt}}
+									.panel-content
+										| #{description}
+						.frame#problems
+							h2 Связанные проблемы
+							label Описание проблемы
+							.input-control.textarea
+								textarea#problem-description(name='problem')
+							a.new-problem.button Создать проблему
+							each problems
+								.panel.problem
+									.panel-header
+										span {{as_calendar createdAt}}
+										span #{status_locale}
+									.panel-content
+										| #{description}                                     
+										h4 связанные инциденты
+										each tickets
+											div
+												a(href="/tickets/#{_id}") #{type_locale} #{doc_id} #{status_locale}
+										a.add-incident.button.hide( data-ticket-id="{{../_id}}") Связать с проблемой этот инцидент
+					if isRfc
+						.frame#changes
+							if change
+								h5 Создано 
+									a(href="/changes/#{change._id}") изменение 
+									|{{as_calendar change.createdAt}}
+								div Запланировано на {{as_calendar change.timeslotAt}}
+							else
+								a.button(href="/changes/new?ticket=#{_id}") Создать изменение
+								//- a.button(href="{{pathFor 'changes.new' query='ticket=#{_id}'}}") Создать изменение
+	
+	+contentFor('navbar')
+		span.element
+			a(href='/tickets/new')
+				i.icon-file
+				| Создать
+				
+	+contentFor('breadcrumbs')
+		li
+			a(href='/tickets') Обращения
+		li
+			a(href="/tickets/#{_id}") #{type_locale} #{doc_id}
 
 template(name='employeeDetails')
-    h3 Инициатор
-    dl
-        dt ФИО
-        dd #{name} 
-        dt Должность
-        dd #{position}
-        dt телефон
-        dd #{phone}
-        dt email
-        dd #{email}
+	h3 Инициатор
+	dl
+		dt ФИО
+		dd #{name} 
+		dt Должность
+		dd #{position}
+		dt телефон
+		dd #{phone}
+		dt email
+		dd #{email}
 
 template(name='clientDetails')
-    h3 Клиент #{client.name}
+	h3 Клиент #{client.name}
 
 template(name='assignTicket')
-    form
-        .input-control.select
-            label Ответственный
-                select(name='agent_id')
-                    each agents
-                        option(value=_id) #{name}
-        .input-control
-            input.default(type='submit' value='Назначить')
-            button.reclassify Реклассифицировать
+	form
+		.input-control.select
+			label Ответственный
+				select(name='agent_id')
+					each agents
+						option(value=_id) #{name}
+		.input-control
+			input.default(type='submit' value='Назначить')
+			button.reclassify Реклассифицировать
 template(name='finishTicket')
-    form
-        .input-control
-            button.finish Завершить работы
+	.row
+		form
+			.input-control
+				button.button.primary.finish Завершить работы
 
 template(name='processTicket')
-    button.default.process В работу
+	.row
+		button.button.primary.process В работу
 
 template(name='classifyTicket')
-    form
-        .input-control.select
-            label
-                | SLA
-                select(name='sla_id')
-                    each slas
-                        option(value=_id) #{name}
-        .input-control.radio
-            label
-                input(type='radio', value='Incident', name='ticketType') 
-                span.check
-                | Инцидент
-        .input-control.radio
-            label
-                input(type='radio', value='ServiceRequest', name='ticketType') 
-                span.check
-                | Запрос на обслуживание
-        .input-control.radio                
-            label
-                input(type='radio', value='Rfc', name='ticketType') 
-                span.check
-                | Rfc
-        .input-control.radio                
-            label
-                input(type='radio', value='Feedback', name='ticketType') 
-                span.check
-                | Feedback
-        .input-control
-            input(type='submit', value='Классифицировать')
+	form
+		.input-control.select
+			label
+				| SLA
+				select(name='sla_id')
+					each slas
+						option(value=_id) #{name}
+		.input-control.radio
+			label
+				input(type='radio', value='Incident', name='ticketType') 
+				span.check
+				| Инцидент
+		.input-control.radio
+			label
+				input(type='radio', value='ServiceRequest', name='ticketType') 
+				span.check
+				| Запрос на обслуживание
+		.input-control.radio                
+			label
+				input(type='radio', value='Rfc', name='ticketType') 
+				span.check
+				| Rfc
+		.input-control.radio                
+			label
+				input(type='radio', value='Feedback', name='ticketType') 
+				span.check
+				| Feedback
+		.input-control
+			input(type='submit', value='Классифицировать')

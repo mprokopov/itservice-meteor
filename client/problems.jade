@@ -3,52 +3,71 @@ template(name='Problems')
 	table.table
 		each problems
 			tr
-				td #{description}
+				td 
+					a(href="/problems/#{_id}") #{description}
 				td #{client.name}
 				td #{sla.name}
-				td 
-					a(href="/problems/#{_id}") #{status_locale}
-				td 
-					span {{as_calendar createdAt}}
+				td(class=problem_status_class)
+					| #{status_locale}
 				td
-					a.remove(href='#') удалить
+					span {{as_calendar createdAt}}
+				td 
+					a.remove(href='#')
+						i.icon-remove.fg-red
+	
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='problems.index'
+				| Проблемы
+
 template(name='problemIncident')
 	h3 
-		a(href="/tickets/#{_id}") Инцидент #{doc_id}
+		a(href="/tickets/#{_id}") #{type_locale} #{doc_id}
 	
 	p #{description}
 	span {{as_calendar createdAt}}
 
 template(name='showProblem')
-	form
+	.span6
+		form
+			label Описание проблемы
+			.input-control.textarea
+				textarea(name='description')
+					|#{description}
+			label Обходное решение
+			.input-control.textarea
+				textarea(name='workaround')
+					|#{workaround}
+			label Решение проблемы
+			.input-control.textarea
+				textarea(name='solution')
+					|#{solution}
+			.input-control.radio
+				label
+					input(type='radio' name='status' value='open' checked=isOpen)
+					span.check
+					|решение не найдено
+			.input-control.radio
+				label
+					input(type='radio' name='status' value='workaround' checked=isWorkaround)
+					span.check
+					|найдено обходное решение
+			.input-control.radio
+				label
+					input(type='radio' name='status' value='solved' checked=isSolved)
+					span.check
+					|найдено решение
+			.input-control
+				input(type='submit')
+	.span6
 		h2 Связанные инциденты
-		each tickets
-			+problemIncident
+			each tickets
+				+problemIncident
 
-		label Описание проблемы
-		.input-control.textarea
-			textarea(name='description')
-				|#{description}
-		label Обходное решение
-		.input-control.textarea
-			textarea(name='workaround')
-		label Решение проблемы
-		.input-control.textarea
-			textarea(name='solution')
-		.input-control.radio
-			label
-				input(type='radio' name='status' value='open' checked=isOpen)
-				span.check
-				|решение не найдено
-		.input-control.radio
-			label
-				input(type='radio' name='status' value='workaround' checked=isWorkaround)
-				span.check
-				|найдено обходное решение
-		.input-control.radio
-			label
-				input(type='radio' name='status' value='solved' checked=isSolved)
-				span.check
-				|найдено решение
-		.input-control
-			input(type='submit')
+	+contentFor('breadcrumbs')
+		li
+			+linkTo route='problems.index'
+				| Проблемы
+		li
+			+linkTo route='problems.show'
+				| Проблема #{sla.name} #{client.name}
