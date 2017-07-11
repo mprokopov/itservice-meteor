@@ -21,7 +21,7 @@ Tickets classified with service recieve response time and resolution time.
 ![Screenshot 3](/docs/shot3.png?raw=true "Screenshot 3")
 
 
-![Screenshot 4](/docs/shot3.png?raw=true "Screenshot 4")
+![Screenshot 4](/docs/shot4.png?raw=true "Screenshot 4")
 
 
 
