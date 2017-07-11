@@ -21,5 +21,8 @@ Tickets classified with service recieve response time and resolution time.
 ![Screenshot 3](/docs/shot3.png?raw=true "Screenshot 3")
 
 
+![Screenshot 4](/docs/shot3.png?raw=true "Screenshot 4")
+
+
 
 All this is highly dynamic, works in realtime and MongoDB based.
