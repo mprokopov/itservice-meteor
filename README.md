@@ -12,13 +12,13 @@ You can add services, SLA, customers, employees, create and assign tickets, move
 
 Tickets classified with service recieve response time and resolution time.
 
-![Screenshot 1](/doc/shot1.png?raw=true "Screenshot 1")
+![Screenshot 1](/docs/shot1.png?raw=true "Screenshot 1")
 
 
-![Screenshot 2](/doc/shot2.png?raw=true "Screenshot 2")
+![Screenshot 2](/docs/shot2.png?raw=true "Screenshot 2")
 
 
-![Screenshot 3](/doc/shot3.png?raw=true "Screenshot 3")
+![Screenshot 3](/docs/shot3.png?raw=true "Screenshot 3")
 
 
 
